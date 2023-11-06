@@ -1,12 +1,14 @@
 from django.db import models
-from django.utils import timezone
+from  django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 # Customers table
 class Customer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15,unique=True)
+    email = models.EmailField(null=True)
     # address = models.TextField()
     loyalty_points = models.IntegerField(default=0)
     registration_date = models.DateField()
@@ -21,6 +23,21 @@ class Expense(models.Model):
     expense_date = models.DateField()
     category = models.CharField(max_length=50)
     payment_method = models.CharField(max_length=50)
+
+    def save(self, *args, **kwargs):
+        is_new_expense = not self.pk  # Check if this is a new order being saved
+        super(Expense, self).save(*args, **kwargs)
+
+        # If the order status is 'completed' and it's a new order, create an associated income record
+        if is_new_expense:
+            expense = Expense.objects.get(pk=1)
+            transaction = Tranzaction(
+                transaction_date=self.expense_date,
+                amount=self.amount,
+                content_object=expense,  # Associate with an Order
+                type='expense'  # Or 'income' as needed
+            )
+            transaction.save()
 
     def __str__(self):
      return f'{self.description}'
@@ -38,13 +55,35 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
 
         # If the order status is 'completed' and it's a new order, create an associated income record
-        if self.status == 'completed' and is_new_order:
-            Income.objects.create(
+        # if self.status == 'completed' and not is_new_order:
+        if self.status == 'completed':
+            income = Income.objects.create(
                 order=self,
-                payment_date=timezone.now(), # You can modify the payment_date as needed
+                payment_date=timezone.now(), 
                 amount=self.total_amount,
                 payment_method=self.payment_method
             )
+
+            income.save()
+            
+        if is_new_order:
+            order = Order.objects.get(pk=1)
+            transaction = Tranzaction(
+                transaction_date=self.order_date,
+                amount=self.total_amount,
+                content_object=order,  # Associate with an Order
+                type='income'  # Or 'income' as needed
+            )
+            transaction.save()
+            # transaction = Transaction.objects.create(
+            #     order=self,
+            #     type="order",
+            #     transaction_date=timezone.now(), 
+            #     amount=self.total_amount,
+            # )
+
+            # transaction.save()
+
 
 
 # Income Table
@@ -53,6 +92,22 @@ class Income(models.Model):
     payment_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=50)
+
+    # def save(self, *args, **kwargs):
+    #     is_new_order = not self.pk  # Check if this is a new order being saved
+    #     super(Order, self).save(*args, **kwargs)
+
+    #     # If the order status is 'completed' and it's a new order, create an associated income record
+        
+    #     transaction = Transaction.objects.create(
+    #         order=self,
+    #         payment_date=timezone.now(), # You can modify the payment_date as needed
+    #         amount=self.total_amount,
+    #         payment_method=self.payment_method
+    #     )
+
+    #     transaction.save()
+
 
 # Products/Services Table
 class ProductService(models.Model):
@@ -78,6 +133,20 @@ class Transaction(models.Model):
     type = models.CharField(max_length=10, choices=[('income', 'Income'), ('expense', 'Expense')])
     transaction_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Tranzaction(models.Model):
+    transaction_date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Generic Foreign Key fields to reference Order and Expense
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    
+    type = models.CharField(
+        max_length=10,
+        choices=[('income', 'Income'), ('expense', 'Expense')]
+    )
 
 # Payment Methods Table
 class PaymentMethod(models.Model):

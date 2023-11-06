@@ -27,69 +27,67 @@
     <link href="{% static 'base/css/style.css' %}" rel="stylesheet">
     <style>
         *{
-            box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            padding: 0px;
-            margin: 0px;
-        }
-        body{
-            font-family: Helvetica;
-            -webkit-font-smoothing: antialiased;
-            background: rgba( 71, 147, 227, 1);
-        }
-        h2{
-            text-align: center;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: white;
-            padding: 30px 0;
-        }
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+body{
+    font-family: Helvetica;
+    -webkit-font-smoothing: antialiased;
+    background: rgba( 71, 147, 227, 1);
+}
+h2{
+    text-align: center;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+    padding: 30px 0;
+}
 
-        /* Table Styles */
+/* Table Styles */
 
-        .table-wrapper{
-            margin: 10px 70px 70px;
-            box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
-        }
+.table-wrapper{
+    margin: 10px 70px 70px;
+    box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+}
 
-        .fl-table {
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: normal;
-            border: none;
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 100%;
-            white-space: nowrap;
-            background-color: white;
-        }
+.fl-table {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    background-color: white;
+}
 
-        .fl-table td, .fl-table th {
-            text-align: center;
-            padding: 8px;
-        }
+.fl-table td, .fl-table th {
+    text-align: center;
+    padding: 8px;
+}
 
-        .fl-table td {
-            border-right: 1px solid #f8f8f8;
-            font-size: 12px;
-        }
+.fl-table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 12px;
+}
 
-        .fl-table thead th {
-            color: #ffffff;
-            background: #4FC3A1;
-        }
+.fl-table thead th {
+    color: #ffffff;
+    background: #4FC3A1;
+}
 
 
-        .fl-table thead th:nth-child(odd) {
-            color: #ffffff;
-            background: #324960;
-        }
+.fl-table thead th:nth-child(odd) {
+    color: #ffffff;
+    background: #324960;
+}
 
-        .fl-table tr:nth-child(even) {
-            background: #F8F8F8;
-        }
+.fl-table tr:nth-child(even) {
+    background: #F8F8F8;
+}
     </style>
     <style>
         body {
@@ -97,26 +95,32 @@
         }
     
         /* The Modal (background) */
-        .modal-form {
+        .modal {
             display: none;
+            /* Hidden by default */
             position: fixed;
-            z-index: 9;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
             padding-top: 100px;
+            /* Location of the box */
             left: 0;
             top: 0;
             width: 100%;
+            /* Full width */
             height: 100%;
+            /* Full height */
             overflow: auto;
+            /* Enable scroll if needed */
             background-color: rgb(0, 0, 0);
+            /* Fallback color */
             background-color: rgba(0, 0, 0, 0.4);
-            margin: 0;
-            padding: 0;
-            
+            /* Black w/ opacity */
         }
     
         /* Modal Content */
         .modal-content {
-            background-color: #ffffff;
+            background-color: #fefefe;
             margin: auto;
             padding: 20px;
             border: 1px solid #888;
@@ -149,45 +153,6 @@
             color: #000;
             text-decoration: none;
             cursor: pointer;
-        }
-
-        .phoneList,
-        .customerList {
-            position: absolute;
-            top: 100%;
-            left: 0; /* Start at the left edge of the input box */
-            width: 100%; 
-            background-color: #f9f9f9;
-            border: 1px solid #d4d4d4;
-            max-height: 100px;
-            overflow-y: scroll;
-        }
-        .phoneList,
-        .customerList ul{
-            border-top: 1px solid #999;
-            background: #f3f3f3;
-            padding: 1px 5px;
-            width: 100%;
-        }
-
-        .phoneList,
-        .customerList ul li{
-            list-style: none;
-            border-radius: 3px;
-            padding: 1px 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .phoneList,
-        .customerList ul li:hover{
-            background: hsl(0, 0%, 100%);
-        }
-
-        #phoneNo::-webkit-inner-spin-button,
-        #phoneNo::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            appearance: none;
         }
     </style>
 </head>
@@ -243,15 +208,19 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="index.html" class="nav-item nav-link">Dashboard</a>
-                        <a href="about.html" class="nav-item nav-link">Orders</a>
-                        <a href="service.html" class="nav-item nav-link">Expenses</a>
+                        <a href="index.html" class="nav-item nav-link">Home</a>
+                        <a href="about.html" class="nav-item nav-link">About</a>
+                        <a href="service.html" class="nav-item nav-link">Services</a>
+                        <a href="pricing.html" class="nav-item nav-link active">Pricing</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">View More</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu border-0 rounded-0 m-0">
                                 <a href="blog.html" class="dropdown-item">Discounts</a>
+                                <a href="blog.html" class="dropdown-item">Transactions</a>
+                                <a href="blog.html" class="dropdown-item">Discounts</a>
+                                <a href="blog.html" class="dropdown-item">Orders</a>
+                                <a href="blog.html" class="dropdown-item">Expenses</a>
                                 <a href="single.html" class="dropdown-item">Income</a>
-                                <a href="pricing.html" class="nav-item nav-link active">Transactions</a>
                             </div>
                         </div>
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
@@ -268,7 +237,7 @@
         <div class="container py-5">
             <div class="row align-items-center py-4">
                 <div class="col-md-6 text-center text-md-left">
-                    <h1 class="mb-4 mb-md-0 text-white">Orders</h1>
+                    <h1 class="mb-4 mb-md-0 text-white">Customers</h1>
                 </div>
                 <div class="col-md-6 text-center text-md-right">
                     <div class="d-inline-flex align-items-center">
@@ -278,65 +247,39 @@
                     </div>
                 </div>
             </div>
-              <!-- Trigger/Open The Modal -->
-    <button id="myBtn" class="btn btn-primary float-right mb-3">New Order</button>
-
-        </div>
+             <!-- Trigger/Open The Modal -->
+             <button id="myBtn" class="btn btn-primary float-right mb-3">New Customer</div>
     </div>
     <!-- Page Header Start -->
 
-  
+   
 
     <!-- The Modal -->
-    <div id="myModal" class="modal-form">
+    <div id="myModal" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
         <span class="close">&times;</span>
-        <h3>Create an Order</h3>
-        <form id="ordersForm" method="post">
+        <h3>Add a client</h3>
+        <form id="customerForm" method="post" onsubmit="return validateForm()">
             {% csrf_token %}
             <div class="expenseForm">
                 <div class="expense1">
-                    <label for="phoneNo">Phone Number:</label>
-                    <div style="position: relative; ">
-                        <input type="number" id="phoneNo" name="phoneNo" style="width: 100%;">
-                        <div id="phoneList" class="phoneList">
-                            
-                        </div>
-                    </div><br>
-
-                    
-
-                    <label for="paymentMethod">Payment Method:</label>
-                    <select id="paymentMethod" name="paymentMethod">
-                        <option value="{{ 'cash' }}">cash</option>
-                        <option value="{{ 'mpesa' }}">mpesa</option>
-                    </select><br>
-                    <!-- <input type="text" id="paymentMethod" name="paymentMethod"><br> -->
+                    <label for="description">First Name:</label>
+                    <input type="text" id="fname" name="fname" required><br>
             
-                    <label for="amount">Amount:</label>
-                    <input type="number" id="amount" name="amount"><br>
+                    <label for="expenseDate">Phone Number</label>
+                    <input type="tel" id="phoneNo" name="phoneNo"><br>
+            
                     
 
                 </div>
                 <div class="expense2">
-                    <label for="customerName">Customer Name</label>
-                    <div style="position: relative; ">
-                        <input autocomplete="off" type="text" id="customerName" name="customerName" placeholder="Customer Name" style="width: 100%;">
-                        <div id="customerList" class="customerList">
-                            
-                        </div>
-                    </div><br>
-
-                    <label for="Status">Status:</label>
-                    <select id="status" name="status">
-                        <option value="{{ 'pending' }}">pending</option>
-                        <option value="{{ 'in_progress' }}">in_progress</option>
-                        <option value="{{ 'completed' }}">completed</option>
-                    </select><br>
+                    <label for="paymentMethod">Last Name:</label>
+                    <input type="text" id="lname" name="lname"><br>
             
-                   
+                    <label for="amount">Email:</label>
+                    <input type="email" id="email" name="email"><br>
                 </div>
             </div>
 
@@ -350,25 +293,23 @@
         <table class="fl-table">
             <thead>
             <tr>
-                <th>Customer Name</th>
+                <th>Full Name</th>
                 <th>Phone Number</th>
-                <th>Expense date</th>
-                <th>status</th>
-                <th>Payment Method</th>
-                <th>Amount</th>
-                <th>edit</th>
+                <th>Email</th>
+                <th>Registration Date</th>
+                <th>Loyalty Points</th>
+                <th> </th>
             </tr>
             </thead>
             <tbody>
-                {% for order in orders %}
+                {% for client in customers %}
                     <tr>
-                        <td>{{ order.customer.first_name }} {{ order.customer.last_name }}</td>
-                        <td>{{ order.customer.phone_number }}</td>
-                        <td>{{ order.order_date }}</td>
-                        <td>{{ order.status }}</td>
-                        <td>{{ order.payment_method }}</td>
-                        <td>{{ order.total_amount }}</td>
-                        <td>edit icon/ delete icon</td>
+                        <td>{{ client.first_name }} {{ client.last_name }}</td>
+                        <td>{{ client.phone_number }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.registration_date }}</td>
+                        <td>{{ client.loyalty_points }}</td>
+                        <td>edit icon</td>
                     </tr>
                 {% endfor %}
             <tbody>
@@ -477,114 +418,18 @@
         }
         </script>
         <script>
-            const customerList = document.querySelector(".customerList");
-            const phoneList = document.querySelector(".phoneList");
-            const inputbox = document.getElementById("customerName");
-            const phoneNumberInput = document.getElementById("phoneNo");
-
-            phoneNumberInput.onkeyup = function(){
-                let phoneResult = []
-                let phoneInput = phoneNumberInput.value;
-
-                if(phoneInput.length){
-                    $.ajax({
-                        type: 'GET',
-                        url: '/get_customer_list/',
-                        data: {'customer_phoneNo': phoneNumberInput.value},
-                        dataType: 'json',
-                        success: function(data) {
-                            let customers = data.customers;
-                            phoneResult = customers;
-                            console.log(data.customers);
-
-                            // Call the display function inside the success callback
-                            phoneDisplay(phoneResult);
-                        }
-                    });
+            function validateForm() {
+                var phoneNo = document.getElementById("phoneNo").value;
+        
+                if (phoneNo === "") {
+                    alert("Phone Number is required.");
+                    return false; // Prevent form submission
                 }
-                if(!phoneResult.length){
-                    customerList.innerHTML = '';
-                }
-            }
-
-            inputbox.onkeyup = function(){
-                let result = []
-                let input = inputbox.value;
-
-                if(input.length){
-
-                    $.ajax({
-                        type: 'GET',
-                        url: '/get_customer_list/',
-                        data: {'customer_name': inputbox.value},
-                        dataType: 'json',
-                        success: function(data) {
-                            let customers = data.customers;
-                            result = customers;
-                            console.log(result);
-
-                            // Call the display function inside the success callback
-                            nameDisplay(result);
-                        }
-                    });
-                }
-
-                
-                
-
-                if(!result.length){
-                    customerList.innerHTML = '';
-                }
-            }
-
-            
-
-            function nameDisplay(result){
-                const content = result.map((customer)=>{
-                    return `<li onclick="selectNameInput(this)" data-phone="${customer.phone}">${customer.first_name} ${customer.last_name}</li>`;
-                })
-                customerList.innerHTML="<ul>" + content.join('') + "</ul>";
-            }
-
-            function phoneDisplay(result){
-                const content = result.map((customer)=>{
-                    return `<li onclick="selectNumberInput(this)" data-firstName="${customer.first_name}" data-lastName="${customer.last_name}">${customer.phone}</li>`;
-                })
-                phoneList.innerHTML="<ul>" + content.join('') + "</ul>";
-            }
-
-            function selectNameInput(list){
-                inputbox.value = list.innerHTML;
-                const phone = list.getAttribute('data-phone');
-                phoneNumberInput.value = phone;
-                customerList.innerHTML = '';
-            }
-
-            function selectNumberInput(list){
-                phoneNumberInput.value = list.innerHTML;
-                const firstName = list.getAttribute('data-firstName');
-                const lastName = list.getAttribute('data-lastName');
-                inputbox.value = firstName + ' ' + lastName;
-                phoneList.innerHTML = '';
+        
+                return true; // Allow form submission
             }
         </script>
-        <script>
-           
-            
-            // function fillCustomerInfo(customerId) {
-            //     // Make an AJAX request to fetch customer details by ID and fill the form fields
-            //     $.ajax({
-            //         type: 'GET',
-            //         url: '/get_customer_info/',
-            //         data: {'customer_id': customerId},
-            //         dataType: 'json',
-            //         success: function(data) {
-            //             var customer = data.customer;
-            //             document.getElementById('phoneNo').value = customer.phone;
-            //         }
-            //     });
-            // }
-            </script>
+
 </body>
 
 </html>
