@@ -243,15 +243,15 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="index.html" class="nav-item nav-link">Dashboard</a>
-                        <a href="about.html" class="nav-item nav-link">Orders</a>
-                        <a href="service.html" class="nav-item nav-link">Expenses</a>
+                        <a href="{% url 'home'%}" class="nav-item nav-link">Dashboard</a>
+                        <a href="{% url 'orders'%}" class="nav-item nav-link">Orders</a>
+                        <a href="{% url 'expenses'%}" class="nav-item nav-link">Expenses</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">View More</a>
                             <div class="dropdown-menu border-0 rounded-0 m-0">
-                                <a href="blog.html" class="dropdown-item">Discounts</a>
-                                <a href="single.html" class="dropdown-item">Income</a>
-                                <a href="pricing.html" class="nav-item nav-link active">Transactions</a>
+                                <!-- <a href="blog.html" class="dropdown-item">Discounts</a> -->
+                                <a href="{% url 'customers' %}" class="dropdown-item">Customers</a>
+                                <a href="{% url 'transactions'%}" class="nav-item nav-link active">Transactions</a>
                             </div>
                         </div>
                         <a href="contact.html" class="nav-item nav-link">Contact</a>

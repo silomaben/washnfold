@@ -196,8 +196,8 @@ h2{
     <!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
+     <!-- Navbar Start -->
+     <div class="container-fluid position-relative nav-bar p-0">
         <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
             <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0 pl-3 pl-lg-5">
                 <a href="" class="navbar-brand">
@@ -208,19 +208,15 @@ h2{
                 </button>
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="index.html" class="nav-item nav-link">Home</a>
-                        <a href="about.html" class="nav-item nav-link">About</a>
-                        <a href="service.html" class="nav-item nav-link">Services</a>
-                        <a href="pricing.html" class="nav-item nav-link active">Pricing</a>
+                        <a href="{% url 'home'%}" class="nav-item nav-link">Dashboard</a>
+                        <a href="{% url 'orders'%}" class="nav-item nav-link">Orders</a>
+                        <a href="{% url 'expenses'%}" class="nav-item nav-link">Expenses</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">View More</a>
                             <div class="dropdown-menu border-0 rounded-0 m-0">
-                                <a href="blog.html" class="dropdown-item">Discounts</a>
-                                <a href="blog.html" class="dropdown-item">Transactions</a>
-                                <a href="blog.html" class="dropdown-item">Discounts</a>
-                                <a href="blog.html" class="dropdown-item">Orders</a>
-                                <a href="blog.html" class="dropdown-item">Expenses</a>
-                                <a href="single.html" class="dropdown-item">Income</a>
+                                <!-- <a href="blog.html" class="dropdown-item">Discounts</a> -->
+                                <a href="{% url 'customers' %}" class="dropdown-item">Customers</a>
+                                <a href="{% url 'transactions'%}" class="nav-item nav-link active">Transactions</a>
                             </div>
                         </div>
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
@@ -230,6 +226,7 @@ h2{
         </div>
     </div>
     <!-- Navbar End -->
+
 
 
     <!-- Page Header Start -->
@@ -425,7 +422,6 @@ h2{
                     alert("Phone Number is required.");
                     return false; // Prevent form submission
                 }
-        
                 return true; // Allow form submission
             }
         </script>
