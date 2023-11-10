@@ -1,431 +1,383 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-    
-
-<head>
-    <meta charset="utf-8">
-    <title>DRYME - Free Laundry Service Website Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
-
-    <!-- Favicon -->
-    <link href="{% static 'base/img/favicon.ico' %}" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet"> 
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{% static 'base/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'base/css/style.css' %}" rel="stylesheet">
-    <style>
-        *{
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-}
-body{
-    font-family: Helvetica;
-    -webkit-font-smoothing: antialiased;
-    background: rgba( 71, 147, 227, 1);
-}
-h2{
-    text-align: center;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: white;
-    padding: 30px 0;
-}
-
-/* Table Styles */
-
-.table-wrapper{
-    margin: 10px 70px 70px;
-    box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
-}
-
-.fl-table {
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: normal;
-    border: none;
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 100%;
-    white-space: nowrap;
-    background-color: white;
-}
-
-.fl-table td, .fl-table th {
-    text-align: center;
-    padding: 8px;
-}
-
-.fl-table td {
-    border-right: 1px solid #f8f8f8;
-    font-size: 12px;
-}
-
-.fl-table thead th {
-    color: #ffffff;
-    background: #4FC3A1;
-}
 
 
-.fl-table thead th:nth-child(odd) {
-    color: #ffffff;
-    background: #324960;
-}
+{% block page-header %}Customers{% endblock %}
+{% block page-header-1 %}Customers{% endblock %}
 
-.fl-table tr:nth-child(even) {
-    background: #F8F8F8;
-}
-    </style>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    
-        /* The Modal (background) */
-        .modal {
-            display: none;
-            /* Hidden by default */
-            position: fixed;
-            /* Stay in place */
-            z-index: 1;
-            /* Sit on top */
-            padding-top: 100px;
-            /* Location of the box */
-            left: 0;
-            top: 0;
-            width: 100%;
-            /* Full width */
-            height: 100%;
-            /* Full height */
-            overflow: auto;
-            /* Enable scroll if needed */
-            background-color: rgb(0, 0, 0);
-            /* Fallback color */
-            background-color: rgba(0, 0, 0, 0.4);
-            /* Black w/ opacity */
-        }
-    
-        /* Modal Content */
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-    
-        .expenseForm {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-        }
-    
-        .expense1,
-        .expense2 {
-            display: flex;
-            flex-direction: column;
-            flex: 1; /* Equal width for both columns */
-        }
-    
-        /* The Close Button */
-        .close {
-            color: #aaaaaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-    
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
-</head>
+{% block content %}
 
-<body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary py-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white pr-3" href="">FAQs</a>
-                        <span class="text-white">|</span>
-                        <a class="text-white px-3" href="">Help</a>
-                        <span class="text-white">|</span>
-                        <a class="text-white pl-3" href="">Support</a>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a class="text-white pl-3" href="">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-
-     <!-- Navbar Start -->
-     <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0 pl-3 pl-lg-5">
-                <a href="" class="navbar-brand">
-                    <h1 class="m-0 text-secondary">Wash<span class="text-primary">N</span>fold</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="{% url 'home'%}" class="nav-item nav-link">Dashboard</a>
-                        <a href="{% url 'orders'%}" class="nav-item nav-link">Orders</a>
-                        <a href="{% url 'expenses'%}" class="nav-item nav-link">Expenses</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">View More</a>
-                            <div class="dropdown-menu border-0 rounded-0 m-0">
-                                <!-- <a href="blog.html" class="dropdown-item">Discounts</a> -->
-                                <a href="{% url 'customers' %}" class="dropdown-item">Customers</a>
-                                <a href="{% url 'transactions'%}" class="nav-item nav-link active">Transactions</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </div>
-    <!-- Navbar End -->
-
-
-
-    <!-- Page Header Start -->
-    <div class="page-header container-fluid bg-secondary pt-2 pt-lg-5 pb-2 mb-5">
-        <div class="container py-5">
-            <div class="row align-items-center py-4">
-                <div class="col-md-6 text-center text-md-left">
-                    <h1 class="mb-4 mb-md-0 text-white">Customers</h1>
-                </div>
-                <div class="col-md-6 text-center text-md-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="btn text-white" href="">Home</a>
-                        <i class="fas fa-angle-right text-white"></i>
-                        <a class="btn text-white disabled" href="">Pricing</a>
-                    </div>
-                </div>
-            </div>
-             <!-- Trigger/Open The Modal -->
-             <button id="myBtn" class="btn btn-primary float-right mb-3">New Customer</div>
-    </div>
-    <!-- Page Header Start -->
-
-   
-
-    <!-- The Modal -->
+<button id="myBtn" class="btn btn-primary float-right mb-3">New Customer</button>
+ <!-- The Modal -->
     <div id="myModal" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Add a client</h3>
-        <form id="customerForm" method="post" onsubmit="return validateForm()">
-            {% csrf_token %}
-            <div class="expenseForm">
-                <div class="expense1">
-                    <label for="description">First Name:</label>
-                    <input type="text" id="fname" name="fname" required><br>
-            
-                    <label for="expenseDate">Phone Number</label>
-                    <input type="tel" id="phoneNo" name="phoneNo"><br>
-            
-                    
-
-                </div>
-                <div class="expense2">
-                    <label for="paymentMethod">Last Name:</label>
-                    <input type="text" id="lname" name="lname"><br>
-            
-                    <label for="amount">Email:</label>
-                    <input type="email" id="email" name="email"><br>
-                </div>
-            </div>
-
-            <input type="submit" value="Submit">
-        </form>
-        </div>
+          <span class="close">&times;</span>
+          <h3>Add a client</h3>
+          <form id="customerForm" method="post" onsubmit="return validateForm()">
+              {% csrf_token %}
+              <div class="expenseForm">
+                  <div class="expense1">
+                      <label for="description">First Name:</label>
+                      <input type="text" id="fname" name="fname" required><br>
+              
+                      <label for="expenseDate">Phone Number</label>
+                      <input type="tel" id="phoneNo" name="phoneNo"><br>
+              
+                      
+  
+                  </div>
+                  <div class="expense2">
+                      <label for="paymentMethod">Last Name:</label>
+                      <input type="text" id="lname" name="lname"><br>
+              
+                      <label for="amount">Email:</label>
+                      <input type="email" id="email" name="email"><br>
+                  </div>
+              </div>
+  
+              <input type="submit" value="Submit">
+          </form>
+          </div>
     
     </div>
 
-    <div class="table-wrapper" style="overflow-x:auto;">
-        <table class="fl-table">
-            <thead>
-            <tr>
-                <th>Full Name</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Registration Date</th>
-                <th>Loyalty Points</th>
-                <th> </th>
-            </tr>
-            </thead>
-            <tbody>
-                {% for client in customers %}
+  
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Orders table</h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
                     <tr>
-                        <td>{{ client.first_name }} {{ client.last_name }}</td>
-                        <td>{{ client.phone_number }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.registration_date }}</td>
-                        <td>{{ client.loyalty_points }}</td>
-                        <td>edit icon</td>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Full Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Phone Number</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Registration Date</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Loyalty Points</th>
+                      <th class="text-secondary opacity-7"></th>
                     </tr>
-                {% endfor %}
-            <tbody>
-        </table>
-    </div>
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-primary text-white mt-5 pt-5 px-sm-3 px-md-5">
-        <div class="row pt-5">
-            <div class="col-lg-3 col-md-6 mb-5">
-                <a href=""><h1 class="text-secondary mb-3"><span class="text-white">DRY</span>ME</h1></a>
-                <p>Volup amet magna clita tempor. Tempor sea eos vero ipsum. Lorem lorem sit sed elitr sit no, sed kasd et ipsum dolor duo dolor</p>
-                <div class="d-flex justify-content-start mt-4">
-                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 38px; height: 38px;" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 38px; height: 38px;" href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 38px; height: 38px;" href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 38px; height: 38px;" href="#"><i class="fab fa-instagram"></i></a>
-                </div>
+                  </thead>
+                  {% for client in customers %}
+                    <tbody>
+                        <tr>
+                        <td>
+                            <div class="d-flex px-2 py-1">
+                            <!-- <div>
+                                <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
+                            </div> -->
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm">{{ client.first_name }} {{ client.last_name }}</h6>
+                                <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
+                            </div>
+                            </div>
+                        </td>
+                        <td>
+                            <p class="text-xs text-secondary mb-0">{{ client.phone_number }}</p>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ client.email }}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ client.registration_date }}</span>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                            <span class="badge badge-sm bg-gradient-success">{{ client.loyalty_points }}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ order.total_amount }}</span>
+                        </td>
+                        <td class="align-middle">
+                            <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                            Edit
+                            </a>
+                        </td>
+                        </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+              </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-white mb-4">Get In Touch</h4>
-                <p>Dolor clita stet nonumy clita diam vero, et et ipsum diam labore</p>
-                <p><i class="fa fa-map-marker-alt mr-2"></i>123 Street, New York, USA</p>
-                <p><i class="fa fa-phone-alt mr-2"></i>+012 345 67890</p>
-                <p><i class="fa fa-envelope mr-2"></i>info@example.com</p>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-white mb-4">Quick Links</h4>
-                <div class="d-flex flex-column justify-content-start">
-                    <a class="text-white mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                    <a class="text-white mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>About Us</a>
-                    <a class="text-white mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Services</a>
-                    <a class="text-white mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Pricing</a>
-                    <a class="text-white" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-white mb-4">Newsletter</h4>
-                <form action="">
-                    <div class="form-group">
-                        <input type="text" class="form-control border-0" placeholder="Your Name" required="required" />
-                    </div>
-                    <div class="form-group">
-                        <input type="email" class="form-control border-0" placeholder="Your Email" required="required" />
-                    </div>
-                    <div>
-                        <button class="btn btn-lg btn-secondary btn-block border-0" type="submit">Submit Now</button>
-                    </div>
-                </form>
-            </div>
+          </div>
         </div>
+      </div>
+      
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
-    <div class="container-fluid bg-dark text-white py-4 px-sm-3 px-md-5">
-        <p class="m-0 text-center text-white">
-            &copy; <a class="text-white font-weight-medium" href="#">Your Site Name</a>. All Rights Reserved. Designed by
-            <a class="text-white font-weight-medium" href="https://htmlcodex.com">HTML Codex</a>
-        </p>
+  </main>
+  <div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+      <i class="material-icons py-2">settings</i>
+    </a>
+    <div class="card shadow-lg">
+      <div class="card-header pb-0 pt-3">
+        <div class="float-start">
+          <h5 class="mt-3 mb-0">Material UI Configurator</h5>
+          <p>See our dashboard options.</p>
+        </div>
+        <div class="float-end mt-4">
+          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+        <!-- End Toggle Button -->
+      </div>
+      <hr class="horizontal dark my-1">
+      <div class="card-body pt-sm-3 pt-0">
+        <!-- Sidebar Backgrounds -->
+        <div>
+          <h6 class="mb-0">Sidebar Colors</h6>
+        </div>
+        <a href="javascript:void(0)" class="switch-trigger background-color">
+          <div class="badge-colors my-2 text-start">
+            <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
+          </div>
+        </a>
+        <!-- Sidenav Type -->
+        <div class="mt-3">
+          <h6 class="mb-0">Sidenav Type</h6>
+          <p class="text-sm">Choose between 2 different sidenav types.</p>
+        </div>
+        <div class="d-flex">
+          <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark" onclick="sidebarType(this)">Dark</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Transparent</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
+        </div>
+        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+        <!-- Navbar Fixed -->
+        <div class="mt-3 d-flex">
+          <h6 class="mb-0">Navbar Fixed</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-3">
+        <div class="mt-2 d-flex">
+          <h6 class="mb-0">Light / Dark</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-sm-4">
+        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
+        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
+        <div class="w-100 text-center">
+          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+          <h6 class="mt-3">Thank you for sharing!</h6>
+          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+          </a>
+        </div>
+      </div>
     </div>
-    <!-- Footer End -->
+  </div>
+  <!--   Core JS Files   -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/material-dashboard.min.js?v=3.1.0"></script>
 
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'base/lib/easing/easing.min.js' %}"></script>
-    <script src="{% static 'base/lib/waypoints/waypoints.min.js' %}"></script>
-    <script src="{% static 'base/lib/counterup/counterup.min.js' %}"></script>
-    <script src="{% static 'base/lib/owlcarousel/owl.carousel.min.js' %}"></script>
-
-    <!-- Contact Javascript File -->
-    <script src="{% static 'base/mail/jqBootstrapValidation.min.js' %}"></script>
-    <script src="{% static 'base/mail/contact.js' %}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{% static 'base/js/main.js' %}"></script>
+  <script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks the button, open the modal 
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    </script>
     <script>
-        // Get the modal
-        var modal = document.getElementById("myModal");
-        
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
-        
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-        
-        // When the user clicks the button, open the modal 
-        btn.onclick = function() {
-          modal.style.display = "block";
-        }
-        
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-          modal.style.display = "none";
-        }
-        
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        }
-        </script>
-        <script>
-            function validateForm() {
-                var phoneNo = document.getElementById("phoneNo").value;
-        
-                if (phoneNo === "") {
-                    alert("Phone Number is required.");
-                    return false; // Prevent form submission
-                }
-                return true; // Allow form submission
-            }
-        </script>
+        const customerList = document.querySelector(".customerList");
+        const phoneList = document.querySelector(".phoneList");
+        const inputbox = document.getElementById("customerName");
+        const phoneNumberInput = document.getElementById("phoneNo");
 
+        phoneNumberInput.onkeyup = function(){
+            let phoneResult = []
+            let phoneInput = phoneNumberInput.value;
+
+            if(phoneInput.length){
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_customer_list/',
+                    data: {'customer_phoneNo': phoneNumberInput.value},
+                    dataType: 'json',
+                    success: function(data) {
+                        let customers = data.customers;
+                        phoneResult = customers;
+                        console.log(data.customers);
+
+                        // Call the display function inside the success callback
+                        phoneDisplay(phoneResult);
+                    }
+                });
+            }
+            if(!phoneResult.length){
+                customerList.innerHTML = '';
+            }
+        }
+
+        inputbox.onkeyup = function(){
+            let result = []
+            let input = inputbox.value;
+
+            if(input.length){
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_customer_list/',
+                    data: {'customer_name': inputbox.value},
+                    dataType: 'json',
+                    success: function(data) {
+                        let customers = data.customers;
+                        result = customers;
+                        console.log(result);
+
+                        // Call the display function inside the success callback
+                        nameDisplay(result);
+                    }
+                });
+            }
+
+            
+            
+
+            if(!result.length){
+                customerList.innerHTML = '';
+            }
+        }
+
+        
+
+        function nameDisplay(result){
+            const content = result.map((customer)=>{
+                return `<li onclick="selectNameInput(this)" data-phone="${customer.phone}">${customer.first_name} ${customer.last_name}</li>`;
+            })
+            customerList.innerHTML="<ul>" + content.join('') + "</ul>";
+        }
+
+        function phoneDisplay(result){
+            const content = result.map((customer)=>{
+                return `<li onclick="selectNumberInput(this)" data-firstName="${customer.first_name}" data-lastName="${customer.last_name}">${customer.phone}</li>`;
+            })
+            phoneList.innerHTML="<ul>" + content.join('') + "</ul>";
+        }
+
+        function selectNameInput(list){
+            inputbox.value = list.innerHTML;
+            const phone = list.getAttribute('data-phone');
+            phoneNumberInput.value = phone;
+            customerList.innerHTML = '';
+        }
+
+        function selectNumberInput(list){
+            phoneNumberInput.value = list.innerHTML;
+            const firstName = list.getAttribute('data-firstName');
+            const lastName = list.getAttribute('data-lastName');
+            inputbox.value = firstName + ' ' + lastName;
+            phoneList.innerHTML = '';
+        }
+    </script>
+    <script>
+       
+        
+        // function fillCustomerInfo(customerId) {
+        //     // Make an AJAX request to fetch customer details by ID and fill the form fields
+        //     $.ajax({
+        //         type: 'GET',
+        //         url: '/get_customer_info/',
+        //         data: {'customer_id': customerId},
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             var customer = data.customer;
+        //             document.getElementById('phoneNo').value = customer.phone;
+        //         }
+        //     });
+        // }
+        </script>
 </body>
 
 </html>
+
+
+{% endblock %}
+

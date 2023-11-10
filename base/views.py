@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import Expense, Category,Order, Customer,PaymentMethod, ProductService,Transaction,Tranzaction
-from .forms import ExpenseForm
+from .forms import ExpenseForm,TimeRangeForm
 from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
-from decimal import Decimal
-
+# from decimal import Decimal
+from datetime import datetime,timedelta
 
 # Create your views here.
 def Home(request):
@@ -33,35 +33,78 @@ def Customers(request):
 
     return render(request,'customers.html',{'customers':customers})
 
+
 def Store(request):
     productServices = ProductService.objects.all()
     return render(request,'store.html',{'store':productServices})
 
 def Transactions(request):
-    all_transactions = Tranzaction.objects.all()
+    time_range = request.GET.get('time_range', 'today')
 
-    total_income = Decimal('0.00')
-    total_expenses = Decimal('0.00')
+    form = TimeRangeForm(request.GET, initial={'time_range': time_range})
 
-    for transaction in all_transactions:
-        if transaction.type == 'income':
-            total_income += transaction.amount
-        elif transaction.type == 'expense':
-            total_expenses += transaction.amount
+    if form.is_valid():
+        custom_start_date = form.cleaned_data.get('custom_start_date')
+        custom_end_date = form.cleaned_data.get('custom_end_date')
+        
+        end_date = timezone.now().date()
+        start_date = None
 
+        if time_range == 'this_year':
+            start_date = datetime(end_date.year, 1, 1).date()
+        elif time_range == 'this_month':
+            start_date = datetime(end_date.year, end_date.month, 1).date()
+        elif time_range == 'this_week':
+            start_date = end_date - timedelta(days=end_date.weekday())
+        elif time_range == 'today':
+            start_date = end_date
+        elif time_range == 'last_month':
+            last_month = end_date.month - 1
+            year = end_date.year
+
+            if last_month < 1:
+                last_month = 12
+                year -= 1
+
+            start_date = datetime(year, last_month, 1).date()
+            end_date = start_date.replace(day=1) - timedelta(days=1)
+        elif time_range == 'custom_range' and custom_start_date and custom_end_date:
+            start_date = custom_start_date
+            end_date = custom_end_date
+
+        if start_date:
+            transactions = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+        else:
+            transactions = Tranzaction.objects.all()
+
+        total_income = sum(transaction.amount for transaction in transactions if transaction.type == 'income')
+        total_expenses = sum(transaction.amount for transaction in transactions if transaction.type == 'expense')
+        net_income = total_income - total_expenses
+
+        context = {
+            'transactions': transactions,
+            'total_income': total_income,
+            'total_expenses': total_expenses,
+            'net_income': net_income,
+            'time_range': time_range,
+            'form': form,
+        }
+
+        return render(request, 'transactions.html', context)
+
+    transactions = Tranzaction.objects.filter(transaction_date=timezone.now().date())
+    total_income = sum(transaction.amount for transaction in transactions if transaction.type == 'income')
+    total_expenses = sum(transaction.amount for transaction in transactions if transaction.type == 'expense')
     net_income = total_income - total_expenses
 
     context = {
-        'transactions': all_transactions,
+        'form': form,
+        'transactions': transactions,
         'total_income': total_income,
         'total_expenses': total_expenses,
         'net_income': net_income,
     }
-
-    # print(context)
-
     return render(request, 'transactions.html', context)
-    # return render(request,'transactions.html',{'transactions':all_transactions})
 
 def get_customer_list(request):
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' and request.method == 'GET':
@@ -111,6 +154,93 @@ def Orders(request):
         
     return render(request,'orders.html',{'orders': orders, "choices":choices})
 
+
+
+def Expenses(request):
+
+    choices = Category.objects.all().values_list('name','name')
+
+    choice_list = []
+
+    for item in choices:
+        choice_list.append(item)
+
+    expenses = Expense.objects.all()
+
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        expense_date = request.POST.get('expenseDate')
+        category = request.POST.get('category')
+        payment_method = request.POST.get('paymentMethod')
+        amount = request.POST.get('amount')
+        # Extract other form fields as needed
+
+        # Create a new instance of YourModel and save it
+        expense = Expense(description=description, amount=amount, expense_date=expense_date, category=category, payment_method=payment_method)
+        expense.save()
+
+        return redirect('home')  # Redirect to a success page or any other desired URL
+
+    else:
+        form = ExpenseForm()
+
+    return render(request,'expenses.html',{'expenses': expenses,'form':form,'choices':choice_list})
+ 
+
+# def Expenses1(request):
+
+#     choices = Category.objects.all().values_list('name','name')
+
+#     choice_list = []
+
+#     for item in choices:
+#         choice_list.append(item)
+
+#     expenses = Expense.objects.all()
+
+#     if request.method == 'POST':
+#         description = request.POST.get('description')
+#         expense_date = request.POST.get('expenseDate')
+#         category = request.POST.get('category')
+#         payment_method = request.POST.get('paymentMethod')
+#         amount = request.POST.get('amount')
+#         # Extract other form fields as needed
+
+#         # Create a new instance of YourModel and save it
+#         expense = Expense(description=description, amount=amount, expense_date=expense_date, category=category, payment_method=payment_method)
+#         expense.save()
+
+#         return redirect('home')  # Redirect to a success page or any other desired URL
+
+#     else:
+#         form = ExpenseForm()
+
+#     return render(request,'expenses1.html',{'expenses': expenses,'form':form,'choices':choice_list})
+ 
+
+# def Customers1(request):
+#     customers = Customer.objects.all()
+
+#     if request.method == 'POST':
+#         first_name = request.POST.get('fname')
+#         last_name = request.POST.get('lname')
+#         phoneNo = request.POST.get('phoneNo')
+#         email = request.POST.get('email')
+
+#         new_customer = Customer(
+#             first_name=first_name, 
+#             last_name=last_name, 
+#             phone_number=phoneNo,
+#             email=email,
+#             registration_date=timezone.now()  
+#         )
+        
+#         new_customer.save()
+
+#         return redirect('customers') 
+
+#     return render(request,'customers.html',{'customers':customers})
+
 # def Orders1(request):
   
 #     orders = Order.objects.select_related('customer')
@@ -148,66 +278,28 @@ def Orders(request):
 #     return render(request,'orders1.html',{'orders': orders, "choices":choices})
 
 
+# def Transactions1(request):
+#     all_transactions = Tranzaction.objects.all()
 
-def Expenses(request):
+#     total_income = Decimal('0.00')
+#     total_expenses = Decimal('0.00')
 
-    choices = Category.objects.all().values_list('name','name')
+#     for transaction in all_transactions:
+#         if transaction.type == 'income':
+#             total_income += transaction.amount
+#         elif transaction.type == 'expense':
+#             total_expenses += transaction.amount
 
-    choice_list = []
+#     net_income = total_income - total_expenses
 
-    for item in choices:
-        choice_list.append(item)
+#     context = {
+#         'transactions': all_transactions,
+#         'total_income': total_income,
+#         'total_expenses': total_expenses,
+#         'net_income': net_income,
+#     }
 
-    expenses = Expense.objects.all()
+#     # print(context)
 
-    if request.method == 'POST':
-        description = request.POST.get('description')
-        expense_date = request.POST.get('expenseDate')
-        category = request.POST.get('category')
-        payment_method = request.POST.get('paymentMethod')
-        amount = request.POST.get('amount')
-        # Extract other form fields as needed
-
-        # Create a new instance of YourModel and save it
-        expense = Expense(description=description, amount=amount, expense_date=expense_date, category=category, payment_method=payment_method)
-        expense.save()
-
-        return redirect('home')  # Redirect to a success page or any other desired URL
-
-    else:
-        form = ExpenseForm()
-
-    return render(request,'expenses.html',{'expenses': expenses,'form':form,'choices':choice_list})
- 
-
-def Expenses1(request):
-
-    choices = Category.objects.all().values_list('name','name')
-
-    choice_list = []
-
-    for item in choices:
-        choice_list.append(item)
-
-    expenses = Expense.objects.all()
-
-    if request.method == 'POST':
-        description = request.POST.get('description')
-        expense_date = request.POST.get('expenseDate')
-        category = request.POST.get('category')
-        payment_method = request.POST.get('paymentMethod')
-        amount = request.POST.get('amount')
-        # Extract other form fields as needed
-
-        # Create a new instance of YourModel and save it
-        expense = Expense(description=description, amount=amount, expense_date=expense_date, category=category, payment_method=payment_method)
-        expense.save()
-
-        return redirect('home')  # Redirect to a success page or any other desired URL
-
-    else:
-        form = ExpenseForm()
-
-    return render(request,'expenses1.html',{'expenses': expenses,'form':form,'choices':choice_list})
- 
-
+#     return render(request, 'transactions1.html', context)
+#     # return render(request,'transactions.html',{'transactions':all_transactions})

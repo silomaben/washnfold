@@ -28,26 +28,32 @@
     }
 
     /* The Modal (background) */
-    .modal-form {
+    .modal {
         display: none;
+        /* Hidden by default */
         position: fixed;
+        /* Stay in place */
         z-index: 99991;
+        /* Sit on top */
         padding-top: 100px;
+        /* Location of the box */
         left: 0;
         top: 0;
         width: 100%;
+        /* Full width */
         height: 100%;
+        /* Full height */
         overflow: auto;
+        /* Enable scroll if needed */
         background-color: rgb(0, 0, 0);
+        /* Fallback color */
         background-color: rgba(0, 0, 0, 0.4);
-        margin: 0;
-        padding: 0;
-        
+        /* Black w/ opacity */
     }
 
     /* Modal Content */
     .modal-content {
-        background-color: #ffffff;
+        background-color: #fefefe;
         margin: auto;
         padding: 20px;
         border: 1px solid #888;
@@ -80,39 +86,6 @@
         color: #000;
         text-decoration: none;
         cursor: pointer;
-    }
-
-    .phoneList,
-    .customerList {
-        position: absolute;
-        top: 100%;
-        left: 0; /* Start at the left edge of the input box */
-        width: 100%; 
-        background-color: #f9f9f9;
-        border: 1px solid #d4d4d4;
-        max-height: 100px;
-        overflow-y: scroll;
-    }
-    .phoneList,
-    .customerList ul{
-        border-top: 1px solid #999;
-        background: #f3f3f3;
-        padding: 1px 5px;
-        width: 100%;
-    }
-
-    .phoneList,
-    .customerList ul li{
-        list-style: none;
-        border-radius: 3px;
-        padding: 1px 5px;
-        cursor: pointer;
-        width: 100%;
-    }
-
-    .phoneList,
-    .customerList ul li:hover{
-        background: hsl(0, 0%, 100%);
     }
 
     #phoneNo::-webkit-inner-spin-button,
@@ -184,7 +157,7 @@
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>
-            <span class="nav-link-text ms-1">Notifications</span>
+            <span class="nav-link-text ms-1">Store</span>
           </a>
         </li>
 

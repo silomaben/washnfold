@@ -67,12 +67,11 @@ class Order(models.Model):
             income.save()
             
         if is_new_order:
-            order = Order.objects.get(pk=1)
             transaction = Tranzaction(
                 transaction_date=self.order_date,
                 amount=self.total_amount,
-                content_object=order,  # Associate with an Order
-                type='income'  # Or 'income' as needed
+                content_object=self, 
+                type='income'
             )
             transaction.save()
             # transaction = Transaction.objects.create(

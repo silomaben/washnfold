@@ -1,3 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block page-header %}Store{% endblock %}
+{% block page-header-1 %}Store{% endblock %}
+
+{% block content %}
+
+<button id="myBtn" class="btn btn-primary float-right mb-3">New Order</button>
+ <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Create an Order</h3>
+        <form id="ordersForm" method="post">
+            {% csrf_token %}
+            <div class="expenseForm">
+                <div class="expense1">
+                    <label for="phoneNo">Phone Number:</label>
+                    <div style="position: relative; ">
+                        <input type="number" id="phoneNo" name="phoneNo" style="width: 100%;">
+                        <div id="phoneList" class="phoneList">
+                            
+                        </div>
+                    </div><br>
+
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" name="paymentMethod">
+                        <option value="{{ 'cash' }}">cash</option>
+                        <option value="{{ 'mpesa' }}">mpesa</option>
+                    </select><br>
+                    <!-- <input type="text" id="paymentMethod" name="paymentMethod"><br> -->
+            
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount"><br>
+                    
+
+                </div>
+                <div class="expense2">
+                    <label for="customerName">Customer Name</label>
+                    <div style="position: relative; ">
+                        <input autocomplete="off" type="text" id="customerName" name="customerName" placeholder="Customer Name" style="width: 100%;">
+                        <div id="customerList" class="customerList">
+                            
+                        </div>
+                    </div><br>
+
+                    <label for="Status">Status:</label>
+                    <select id="status" name="status">
+                        <option value="{{ 'pending' }}">pending</option>
+                        <option value="{{ 'in_progress' }}">in_progress</option>
+                        <option value="{{ 'completed' }}">completed</option>
+                    </select><br>
+            
+                   
+                </div>
+            </div>
+
+            <input type="submit" value="Submit">
+        </form>
+        </div>
+    
+    </div>
+
+  
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Orders table</h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Phone Number</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Expense date</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment Method</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">status</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  {% for order in orders %}
+                    <tbody>
+                        <tr>
+                        <td>
+                            <div class="d-flex px-2 py-1">
+                            <!-- <div>
+                                <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
+                            </div> -->
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm">{{ order.customer.first_name }} {{ order.customer.last_name }}</h6>
+                                <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
+                            </div>
+                            </div>
+                        </td>
+                        <td>
+                            <p class="text-xs text-secondary mb-0">{{ order.customer.phone_number }}</p>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ order.order_date }}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ order.payment_method }}</span>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                            <span class="badge badge-sm bg-gradient-success">{{ order.status }}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{ order.total_amount }}</span>
+                        </td>
+                        <td class="align-middle">
+                            <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                            Edit
+                            </a>
+                        </td>
+                        </tr>
+                    </tbody>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main>
+  <div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+      <i class="material-icons py-2">settings</i>
+    </a>
+    <div class="card shadow-lg">
+      <div class="card-header pb-0 pt-3">
+        <div class="float-start">
+          <h5 class="mt-3 mb-0">Material UI Configurator</h5>
+          <p>See our dashboard options.</p>
+        </div>
+        <div class="float-end mt-4">
+          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+        <!-- End Toggle Button -->
+      </div>
+      <hr class="horizontal dark my-1">
+      <div class="card-body pt-sm-3 pt-0">
+        <!-- Sidebar Backgrounds -->
+        <div>
+          <h6 class="mb-0">Sidebar Colors</h6>
+        </div>
+        <a href="javascript:void(0)" class="switch-trigger background-color">
+          <div class="badge-colors my-2 text-start">
+            <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
+          </div>
+        </a>
+        <!-- Sidenav Type -->
+        <div class="mt-3">
+          <h6 class="mb-0">Sidenav Type</h6>
+          <p class="text-sm">Choose between 2 different sidenav types.</p>
+        </div>
+        <div class="d-flex">
+          <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark" onclick="sidebarType(this)">Dark</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Transparent</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
+        </div>
+        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+        <!-- Navbar Fixed -->
+        <div class="mt-3 d-flex">
+          <h6 class="mb-0">Navbar Fixed</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-3">
+        <div class="mt-2 d-flex">
+          <h6 class="mb-0">Light / Dark</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-sm-4">
+        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
+        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
+        <div class="w-100 text-center">
+          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+          <h6 class="mt-3">Thank you for sharing!</h6>
+          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--   Core JS Files   -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/material-dashboard.min.js?v=3.1.0"></script>
+
+  <script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks the button, open the modal 
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    </script>
+    <script>
+        const customerList = document.querySelector(".customerList");
+        const phoneList = document.querySelector(".phoneList");
+        const inputbox = document.getElementById("customerName");
+        const phoneNumberInput = document.getElementById("phoneNo");
+
+        phoneNumberInput.onkeyup = function(){
+            let phoneResult = []
+            let phoneInput = phoneNumberInput.value;
+
+            if(phoneInput.length){
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_customer_list/',
+                    data: {'customer_phoneNo': phoneNumberInput.value},
+                    dataType: 'json',
+                    success: function(data) {
+                        let customers = data.customers;
+                        phoneResult = customers;
+                        console.log(data.customers);
+
+                        // Call the display function inside the success callback
+                        phoneDisplay(phoneResult);
+                    }
+                });
+            }
+            if(!phoneResult.length){
+                customerList.innerHTML = '';
+            }
+        }
+
+        inputbox.onkeyup = function(){
+            let result = []
+            let input = inputbox.value;
+
+            if(input.length){
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_customer_list/',
+                    data: {'customer_name': inputbox.value},
+                    dataType: 'json',
+                    success: function(data) {
+                        let customers = data.customers;
+                        result = customers;
+                        console.log(result);
+
+                        // Call the display function inside the success callback
+                        nameDisplay(result);
+                    }
+                });
+            }
+
+            
+            
+
+            if(!result.length){
+                customerList.innerHTML = '';
+            }
+        }
+
+        
+
+        function nameDisplay(result){
+            const content = result.map((customer)=>{
+                return `<li onclick="selectNameInput(this)" data-phone="${customer.phone}">${customer.first_name} ${customer.last_name}</li>`;
+            })
+            customerList.innerHTML="<ul>" + content.join('') + "</ul>";
+        }
+
+        function phoneDisplay(result){
+            const content = result.map((customer)=>{
+                return `<li onclick="selectNumberInput(this)" data-firstName="${customer.first_name}" data-lastName="${customer.last_name}">${customer.phone}</li>`;
+            })
+            phoneList.innerHTML="<ul>" + content.join('') + "</ul>";
+        }
+
+        function selectNameInput(list){
+            inputbox.value = list.innerHTML;
+            const phone = list.getAttribute('data-phone');
+            phoneNumberInput.value = phone;
+            customerList.innerHTML = '';
+        }
+
+        function selectNumberInput(list){
+            phoneNumberInput.value = list.innerHTML;
+            const firstName = list.getAttribute('data-firstName');
+            const lastName = list.getAttribute('data-lastName');
+            inputbox.value = firstName + ' ' + lastName;
+            phoneList.innerHTML = '';
+        }
+    </script>
+    <script>
+       
+        
+        // function fillCustomerInfo(customerId) {
+        //     // Make an AJAX request to fetch customer details by ID and fill the form fields
+        //     $.ajax({
+        //         type: 'GET',
+        //         url: '/get_customer_info/',
+        //         data: {'customer_id': customerId},
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             var customer = data.customer;
+        //             document.getElementById('phoneNo').value = customer.phone;
+        //         }
+        //     });
+        // }
+        </script>
+</body>
+
+</html>
+
+
+{% endblock %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -298,25 +703,40 @@ h2{
         <table class="fl-table">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Unit</th>
-                <th>In-Stock</th>
-                <th>Price</th>
+                <th>order</th>
+                <th>type</th>
+                <th>transaction_date</th>
+                <th>amount</th>
             </tr>
             </thead>
             <tbody>
-                {% for productORservice in store %}
+                {% for transaction in transactions %}
                     <tr>
-                        <td>{{ productORservice.name }}</td>
-                        <td>{{ productORservice.description }}</td>
-                        <td>{{ productORservice.category }}</td>
-                        <td>{{ productORservice.unit }}</td>
-                        <td>{{ productORservice.stock_quantity }}</td>
-                        <td>{{ productORservice.price }}</td>
+                        <td>ORDER{{ transaction.order.id }}</td>
+                        <td>{{ transaction.type }}</td>
+                        <td>{{ transaction.transaction_date }}</td>
+                        <td>{{ transaction.amount }}</td>
                     </tr>
                 {% endfor %}
+                <tr class="dark-theme">
+                    <td></td>
+                    <td></td>
+                    <td>total_income</td>
+                    <td>{{total_income}}</td>
+                </tr>
+                <tr class="dark-theme">
+                    <td></td>
+                    <td></td>
+                    <td>total_expenses</td>
+                    <td>{{total_expenses}}</td>
+                </tr>
+                <tr class="dark-theme">
+                    <td></td>
+                    <td></td>
+                    <td>net_income</td>
+                    <td>{{net_income}}</td>
+                </tr>
+                
             <tbody>
         </table>
     </div>

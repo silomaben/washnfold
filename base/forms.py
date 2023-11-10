@@ -17,3 +17,31 @@ class ExpenseForm(forms.ModelForm):
         widgets = {
             'category': forms.Select(choices=choice_list,attrs={'class':'form-control'})
         }
+
+        # forms.py
+
+
+
+
+class TimeRangeForm(forms.Form):
+    time_range_choices = [
+        ('today', 'Today'),
+        ('all_time', 'All Time'),
+        ('this_year', 'This Year'),
+        ('this_month', 'This Month'),
+        ('this_week', 'This Week'),
+        ('custom_range', 'Custom Range'),
+    ]
+
+    time_range = forms.ChoiceField(choices=time_range_choices, label='Select Time Range')
+    custom_start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False,
+        label='Start Date'
+    )
+    custom_end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False,
+        label='End Date'
+    )
+
