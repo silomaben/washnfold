@@ -111,6 +111,7 @@
     </div>
     <hr class="horizontal light mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+      {% if user.is_authenticated %}
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link text-white active bg-gradient-primary" href="{% url 'home'%}">
@@ -173,7 +174,6 @@
         </li>
         
       </div>
-      {% if user.is_authenticated %}
       <div class="sidenav-footer position-absolute w-100 bottom-0 ">
         <div class="mx-3">
           <!-- <a class="btn btn-outline-primary mt-4 w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard?ref=sidebarfree" type="button">Documentation</a> -->
