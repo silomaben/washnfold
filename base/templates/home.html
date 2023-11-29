@@ -89,7 +89,7 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Website Views</h6>
+              <h6 class="mb-0 ">Customers per Day</h6>
               <p class="text-sm ">Last Campaign Performance</p>
               <hr class="dark horizontal">
               <div class="d-flex ">
@@ -596,6 +596,10 @@
 {% else %}
 <h1>login please</h1>
 {% endif%}
+<!-- <div id="customer-data" style="display: none;">{{ customer_data_json|safe }}</div> -->
+<div id="daysList" style="display: none;">{{ days_list|json_script:"daysList" }}</div>
+<div id="customersList" style="display: none;">{{ customers_list|json_script:"customersList" }}</div>
+
   <!--   Core JS Files   -->
   <script src="{% static 'dashboard/js/core/popper.min.js/' %}"></script>
   <script src="{% static 'dashboard/js/core/bootstrap.min.js/' %}"></script>
@@ -603,24 +607,29 @@
   <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js/' %}"></script>
   <script src="{% static 'dashboard/js/plugins/chartjs.min.js/' %}"></script>
   <script>
+     // Your Django context variables
+     var daysList = JSON.parse(document.getElementById('daysList').textContent);
+    var customersList = JSON.parse(document.getElementById('customersList').textContent);
+
+
     var ctx = document.getElementById("chart-bars").getContext("2d");
 
     new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["M", "T", "W", "T", "F", "S", "S"],
-        datasets: [{
-          label: "Sales",
-          tension: 0.4,
-          borderWidth: 0,
-          borderRadius: 4,
-          borderSkipped: false,
-          backgroundColor: "rgba(255, 255, 255, .8)",
-          data: [50, 20, 10, 22, 50, 10, 40],
-          maxBarThickness: 6
-        }, ],
-      },
-      options: {
+        type: "bar",
+        data: {
+            labels: daysList,
+            datasets: [{
+                label: "Sales",
+                tension: 0.4,
+                borderWidth: 0,
+                borderRadius: 4,
+                borderSkipped: false,
+                backgroundColor: "rgba(255, 255, 255, .8)",
+                data: customersList,
+                maxBarThickness: 6
+            }],
+        },
+        options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {

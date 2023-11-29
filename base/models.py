@@ -46,16 +46,18 @@ class Expense(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_date = models.DateField()
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed')])
     payment_method = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    cash_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    mpesa_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
 
     def save(self, *args, **kwargs):
-        is_new_order = not self.pk  # Check if this is a new order being saved
+        is_new_order = not self.pk
         super(Order, self).save(*args, **kwargs)
 
-        # If the order status is 'completed' and it's a new order, create an associated income record
-        # if self.status == 'completed' and not is_new_order:
         if self.status == 'completed':
             income = Income.objects.create(
                 order=self,
@@ -74,38 +76,16 @@ class Order(models.Model):
                 type='income'
             )
             transaction.save()
-            # transaction = Transaction.objects.create(
-            #     order=self,
-            #     type="order",
-            #     transaction_date=timezone.now(), 
-            #     amount=self.total_amount,
-            # )
-
-            # transaction.save()
+           
 
 
 
-# Income Table
 class Income(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=50)
 
-    # def save(self, *args, **kwargs):
-    #     is_new_order = not self.pk  # Check if this is a new order being saved
-    #     super(Order, self).save(*args, **kwargs)
-
-    #     # If the order status is 'completed' and it's a new order, create an associated income record
-        
-    #     transaction = Transaction.objects.create(
-    #         order=self,
-    #         payment_date=timezone.now(), # You can modify the payment_date as needed
-    #         amount=self.total_amount,
-    #         payment_method=self.payment_method
-    #     )
-
-    #     transaction.save()
 
 
 # Products/Services Table

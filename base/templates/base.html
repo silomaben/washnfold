@@ -114,7 +114,7 @@
       {% if user.is_authenticated %}
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link text-white active bg-gradient-primary" href="{% url 'home'%}">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'home' %}active bg-gradient-primary{% endif %}" href="{% url 'home'%}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">dashboard</i>
             </div>
@@ -122,7 +122,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{% url 'orders'%}">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'orders' %}active bg-gradient-primary{% endif %}" href="{% url 'orders'%}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">table_view</i>
             </div>
@@ -130,7 +130,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{% url 'expenses'%}">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'expenses' %}active bg-gradient-primary{% endif %}" href="{% url 'expenses'%}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">receipt_long</i>
             </div>
@@ -138,7 +138,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{% url 'customers' %}">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'customers' %}active bg-gradient-primary{% endif %}" href="{% url 'customers' %}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">view_in_ar</i>
             </div>
@@ -146,7 +146,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{% url 'transactions'%}">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'transactions' %}active bg-gradient-primary{% endif %}" href="{% url 'transactions'%}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">format_textdirection_r_to_l</i>
             </div>
@@ -154,7 +154,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="../pages/notifications.html">
+          <a class="nav-link text-white  {% if request.resolver_match.view_name == 'store' %}active bg-gradient-primary{% endif %}" href="../pages/notifications.html">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
             </div>

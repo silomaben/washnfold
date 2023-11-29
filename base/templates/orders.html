@@ -8,6 +8,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
 <button id="myBtn" class="btn btn-primary float-right mb-3">New Order</button>
  <!-- The Modal -->
     <div id="myModal" class="modal">
@@ -28,16 +29,24 @@
                         </div>
                     </div><br>
 
-                    <label for="paymentMethod">Payment Method:</label>
+                    <!-- <label for="paymentMethod">Payment Method:</label>
                     <select id="paymentMethod" name="paymentMethod">
                         <option value="{{ 'cash' }}">cash</option>
                         <option value="{{ 'mpesa' }}">mpesa</option>
+                    </select><br> -->
+
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" name="paymentMethod">
+                        <option value="cash">Cash</option>
+                        <option value="mpesa">M-Pesa</option>
+                        <option value="both">Both</option>
                     </select><br>
                     <!-- <input type="text" id="paymentMethod" name="paymentMethod"><br> -->
-            
-                    <label for="amount">Amount:</label>
-                    <input type="number" id="amount" name="amount"><br>
+
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description"></textarea><br>
                     
+            
 
                 </div>
                 <div class="expense2">
@@ -55,6 +64,19 @@
                         <option value="{{ 'in_progress' }}">in_progress</option>
                         <option value="{{ 'completed' }}">completed</option>
                     </select><br>
+
+                    <div id="cashAmountContainer" style="display:none;">
+                      <label for="cashAmount">Cash Amount:</label>
+                      <input type="number" id="cashAmount" name="cashAmount"><br>
+                    </div>
+                  
+                  <div id="mpesaAmountContainer" style="display:none;">
+                      <label for="mpesaAmount">M-Pesa Amount:</label>
+                      <input type="number" id="mpesaAmount" name="mpesaAmount"><br>
+                  </div>
+                    <!-- <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount"><br>
+                     -->
             
                    
                 </div>
@@ -99,7 +121,7 @@
                                 <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
                             </div> -->
                             <div class="d-flex flex-column justify-content-center">
-                                <h6 class="mb-0 text-sm"><a href="{% url 'customer_detail' order.customer.id %}">{{ order.customer.first_name }} {{ order.customer.last_name }}</a></h6>
+                                <h6 class="mb-0 text-sm">{{ order.customer.first_name }} {{ order.customer.last_name }}</h6>
                                 <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
                             </div>
                             </div>
@@ -247,10 +269,10 @@
 {% endif%}
   <!--   Core JS Files   -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="{% static 'dashboard/js/core/popper.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/core/bootstrap.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/plugins/perfect-scrollbar.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js' %}"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -263,7 +285,7 @@
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="{% static 'dashboard/js/material-dashboard.min.js?v=3.1.0' %}"></script>
+  <script src="../assets/js/material-dashboard.min.js?v=3.1.0"></script>
 
   <script>
     // Get the modal
@@ -385,22 +407,26 @@
         }
     </script>
     <script>
-       
-        
-        // function fillCustomerInfo(customerId) {
-        //     // Make an AJAX request to fetch customer details by ID and fill the form fields
-        //     $.ajax({
-        //         type: 'GET',
-        //         url: '/get_customer_info/',
-        //         data: {'customer_id': customerId},
-        //         dataType: 'json',
-        //         success: function(data) {
-        //             var customer = data.customer;
-        //             document.getElementById('phoneNo').value = customer.phone;
-        //         }
-        //     });
-        // }
-        </script>
+      $(document).ready(function () {
+          $('#paymentMethod').change(function () {
+              var selectedPaymentMethod = $(this).val();
+              
+              if (selectedPaymentMethod === 'cash') {
+                  $('#cashAmountContainer').show();
+                  $('#mpesaAmountContainer').hide();
+              } else if (selectedPaymentMethod === 'mpesa') {
+                  $('#cashAmountContainer').hide();
+                  $('#mpesaAmountContainer').show();
+              } else if (selectedPaymentMethod === 'both') {
+                  $('#cashAmountContainer').show();
+                  $('#mpesaAmountContainer').show();
+              } else {
+                  $('#cashAmountContainer').hide();
+                  $('#mpesaAmountContainer').hide();
+              }
+          });
+      });
+  </script>
 </body>
 
 </html>

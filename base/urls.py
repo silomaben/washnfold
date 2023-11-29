@@ -12,8 +12,8 @@ urlpatterns = [
     path('customer/<int:customer_id>/',views.ViewCustomer,name='customer_detail'),
     path('transactions',views.Transactions,name='transactions'),
     path('get_customer_list/', views.get_customer_list, name='get_customer_list'),
-    # path('transactions1',views.Transactions1,name='transactions1'),
-    # path('customers1',views.Customers1,name='customers1'),
-    # path('expenses1',views.Expenses1,name='expenses1'),
-    # path('orders1',views.Orders1,name='orders1'),
+    path('ajax_order_data/', views.ajax_order_data, name='ajax_order_data'),
+    path('ajax_daily_profits/', views.ajax_daily_profits, name='ajax_daily_profits'),
+    path('ajax_yearly_profits/', views.ajax_yearly_profits, name='ajax_yearly_profits'),
+    
 ]

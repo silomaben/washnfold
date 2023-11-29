@@ -81,6 +81,69 @@
       </div>
     </div>
 
+    <div class="row mt-4">
+      <div class="col-lg-4 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2 ">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+              <div class="chart">
+                <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-0 ">Orders/Day</h6>
+            <!-- <p class="text-sm ">Last Campaign Performance</p> -->
+            <!-- <hr class="dark horizontal">
+            <div class="d-flex ">
+              <i class="material-icons text-sm my-auto me-1">schedule</i>
+              <p class="mb-0 text-sm"> campaign sent 2 days ago </p>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2  ">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+              <div class="chart">
+                <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-0 "> profits/day </h6>
+            <!-- <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) increase in today sales. </p> -->
+            <!-- <hr class="dark horizontal">
+            <div class="d-flex ">
+              <i class="material-icons text-sm my-auto me-1">schedule</i>
+              <p class="mb-0 text-sm"> updated 4 min ago </p>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4 mb-3">
+        <div class="card z-index-2 ">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-dark shadow-dark border-radius-lg py-3 pe-1">
+              <div class="chart">
+                <canvas id="chart-line-tasks" class="chart-canvas" height="170"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="mb-0 ">Profits/month</h6>
+            <!-- <p class="text-sm ">Last Campaign Performance</p> -->
+            <!-- <hr class="dark horizontal">
+            <div class="d-flex ">
+              <i class="material-icons text-sm my-auto me-1">schedule</i>
+              <p class="mb-0 text-sm">just updated</p>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
@@ -265,6 +328,321 @@
   <script src="{% static 'dashboard/js/core/bootstrap.min.js' %}"></script>
   <script src="{% static 'dashboard/js/plugins/perfect-scrollbar.min.js' %}"></script>
   <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js' %}"></script>
+  <script src="{% static 'dashboard/js/plugins/chartjs.min.js/' %}"></script>
+  
+
+  <script>
+    // Wait for the document to be ready before executing the script
+    $(document).ready(function () {
+        // Assume you have an HTML canvas element with id="chart" to display the chart
+        var ctx = document.getElementById("chart-line-tasks").getContext("2d");
+
+
+        // Fetch data from the Django view using AJAX
+        $.ajax({
+            url: '/ajax_yearly_profits/',  // URL to the Django view
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Data received successfully, now you can use it to create your chart
+                console.log(data.months_list);
+                console.log(data.profits_list);
+
+                new Chart(ctx, {
+                  type: "line",
+                  data: {
+                    labels:data.months_list,
+                    datasets: [{
+                      label: "Mobile apps",
+                      tension: 0,
+                      borderWidth: 0,
+                      pointRadius: 5,
+                      pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                      pointBorderColor: "transparent",
+                      borderColor: "rgba(255, 255, 255, .8)",
+                      borderWidth: 4,
+                      backgroundColor: "transparent",
+                      fill: true,
+                      data: data.profits_list,
+                      maxBarThickness: 6
+
+                    }],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      }
+                    },
+                    interaction: {
+                      intersect: false,
+                      mode: 'index',
+                    },
+                    scales: {
+                      y: {
+                        grid: {
+                          drawBorder: false,
+                          display: true,
+                          drawOnChartArea: true,
+                          drawTicks: false,
+                          borderDash: [5, 5],
+                          color: 'rgba(255, 255, 255, .2)'
+                        },
+                        ticks: {
+                          display: true,
+                          padding: 10,
+                          color: '#f8f9fa',
+                          font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                          },
+                        }
+                      },
+                      x: {
+                        grid: {
+                          drawBorder: false,
+                          display: false,
+                          drawOnChartArea: false,
+                          drawTicks: false,
+                          borderDash: [5, 5]
+                        },
+                        ticks: {
+                          display: true,
+                          color: '#f8f9fa',
+                          padding: 10,
+                          font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                          },
+                        }
+                      },
+                    },
+                  },
+                });
+            },
+            error: function (error) {
+                console.log('Error fetching data:', error.message);
+            }
+        });
+    });
+</script>
+<script>
+ $(document).ready(function () {
+        // Make an AJAX request to get daily profits data
+        $.ajax({
+            url: '/ajax_daily_profits/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Retrieve data from the AJAX response
+                var daysList = data.days_list;
+                var dailyProfitsList = data.daily_profits_list;
+
+                // Your logic to handle the data
+                // console.log(daysList);
+                // console.log(dailyProfitsList);
+                // data: dailyProfitsList,
+
+                // labels: daysList,
+              // Your chart creation logic here
+              var ctx = document.getElementById("chart-line").getContext("2d");
+
+              new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: daysList,
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: dailyProfitsList,
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+          },
+          error: function (error) {
+              console.log('Error fetching data:', error);
+          }
+      });
+  });
+</script>
+<script>
+  $(document).ready(function () {
+      // Make an AJAX request to get order data
+      $.ajax({
+          url: '/ajax_order_data/',
+          type: 'GET',
+          dataType: 'json',
+          success: function (data) {
+              // Retrieve data from the AJAX response
+              var daysList = data.days_list;
+              var totalOrdersList = data.total_orders_list;
+
+              // console.log(daysList,totalOrdersList);
+
+              // Your chart creation logic here
+              var ctx = document.getElementById("chart-bars").getContext("2d");
+
+              new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: daysList,
+            datasets: [{
+                label: "Sales",
+                tension: 0.4,
+                borderWidth: 0,
+                borderRadius: 4,
+                borderSkipped: false,
+                backgroundColor: "rgba(255, 255, 255, .8)",
+                data: totalOrdersList,
+                maxBarThickness: 6
+            }],
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+          },
+          error: function (error) {
+              console.log('Error fetching data:', error);
+          }
+      });
+  });
+</script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {

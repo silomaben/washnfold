@@ -6,10 +6,51 @@ from django.http import JsonResponse
 from django.db.models import Q
 # from decimal import Decimal
 from datetime import datetime,timedelta
+from django.db.models import Count
+from datetime import datetime, timedelta
 
-# Create your views here.
+from django.http import JsonResponse
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db.models.functions import TruncMonth
+from django.db.models import Sum, Q
+
 def Home(request):
-    return render(request,'home.html',{})
+    current_date = timezone.now().date()
+
+    days_list = []
+    customers_list = []
+    total_orders_list = []
+    for i in range(7):
+        date_for_iteration = current_date - timezone.timedelta(days=i)
+        
+        orders_for_date = Order.objects.filter(order_date=date_for_iteration)
+        total_orders_for_date = orders_for_date.count()
+
+        day_of_week = date_for_iteration.strftime('%a')
+        
+        days_list.append(day_of_week)
+        customers_list.append(orders_for_date.values('customer').distinct().count())
+        total_orders_list.append(total_orders_for_date)
+
+    # Reverse the lists to have them in the correct order (from oldest to newest)
+    days_list.reverse()
+    customers_list.reverse()
+    total_orders_list.reverse()
+
+    print(days_list)
+    print(customers_list)
+    print(total_orders_list)
+
+    context = {
+        'days_list': days_list,
+        'customers_list': customers_list,
+        'total_orders_list': total_orders_list,
+    }
+    return render(request, 'home.html', context)
+  
+
+    
 
 def ViewCustomer(request, customer_id):
     customer = get_object_or_404(Customer, pk=customer_id)
@@ -117,7 +158,118 @@ def Transactions(request):
         'total_expenses': total_expenses,
         'net_income': net_income,
     }
+
     return render(request, 'transactions.html', context)
+
+
+def ajax_yearly_profits(request):
+    current_date = datetime.now().date()
+    current_year = current_date.year
+
+    # Set the start_date to the beginning of the current year
+    start_date = datetime(current_year, 1, 1).date()
+
+    # Set the end_date to the end of the current year
+    end_date = datetime(current_year, 12, 31).date()
+
+    # Filter transactions for the current year
+    transactions_current_year = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+
+    # Create a list of all months in the current year
+    all_months = [datetime(current_year, month, 1).strftime('%b') for month in range(1, 13)]
+
+    # Initialize a dictionary to store monthly profits
+    monthly_profits = {month: 0 for month in all_months}
+
+    # Update profits based on transactions
+    for transaction in transactions_current_year:
+        month_key = transaction.transaction_date.strftime('%b')
+        if transaction.type == 'income':
+            monthly_profits[month_key] += transaction.amount
+        elif transaction.type == 'expense':
+            monthly_profits[month_key] -= transaction.amount
+
+    # Prepare data for JsonResponse
+    months_list = list(monthly_profits.keys())
+    profits_list = list(monthly_profits.values())
+
+    data = {
+        'months_list': months_list,
+        'profits_list': profits_list,
+    }
+
+    print(data)
+
+    return JsonResponse(data)
+
+
+def ajax_daily_profits(request):
+   # Calculate the end date (today)
+    end_date = timezone.now().date()
+
+    # Calculate the start date (7 days ago)
+    start_date = end_date - timedelta(days=7)
+
+    # Filter transactions for the last 7 days
+    transactions_last_7_days = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+
+    # Calculate profits for each day
+    daily_profits = []
+
+    for i in range(7):
+        date_for_iteration = end_date - timedelta(days=i)
+        
+        # Filter transactions for the current date
+        transactions_for_date = transactions_last_7_days.filter(transaction_date=date_for_iteration)
+
+        # Calculate total income and total expenses for the current date
+        total_income_for_date = sum(transaction.amount for transaction in transactions_for_date if transaction.type == 'income')
+        total_expenses_for_date = sum(transaction.amount for transaction in transactions_for_date if transaction.type == 'expense')
+
+        # Calculate net income for the current date
+        net_income_for_date = total_income_for_date - total_expenses_for_date
+
+        # Append the result as a tuple to the daily_profits list
+        daily_profits.append((date_for_iteration.strftime('%A')[0], net_income_for_date))
+
+    # Reverse the lists before sending them in the AJAX response
+    days_list = [day[0] for day in reversed(daily_profits)]
+    daily_profits_list = [day[1] for day in reversed(daily_profits)]
+
+    # Return the result as JSON
+    data = {
+        'days_list': days_list,
+        'daily_profits_list': daily_profits_list,
+    }
+
+    return JsonResponse(data)
+
+def ajax_order_data(request):
+    current_date = timezone.now().date()
+    days_list = []
+    total_orders_list = []
+
+    for i in range(7):
+        date_for_iteration = current_date - timezone.timedelta(days=i)
+        orders_for_date = Order.objects.filter(order_date=date_for_iteration)
+        total_orders_for_date = orders_for_date.count()
+
+        # Use strftime('%A')[0] to get the first letter of the day name
+        day_of_week = date_for_iteration.strftime('%A')[0]
+
+        days_list.append(day_of_week)
+        total_orders_list.append(total_orders_for_date)
+
+    # Reverse the lists before sending them in the AJAX response
+    days_list.reverse()
+    total_orders_list.reverse()
+
+    data = {
+        'days_list': days_list,
+        'total_orders_list': total_orders_list,
+    }
+
+    return JsonResponse(data)
 
 def get_customer_list(request):
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' and request.method == 'GET':
@@ -129,34 +281,38 @@ def get_customer_list(request):
         print('cust: '+str(customers))
         
         customer_list = [{'id': customer.id, 'first_name': customer.first_name, 'last_name': customer.last_name , 'phone': customer.phone_number} for customer in customers]
+
+        # print(f"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  :   {customer_list}")
         return JsonResponse({'customers': customer_list})
 
 def Orders(request):
-  
     orders = Order.objects.select_related('customer')
     choices = PaymentMethod.objects.all().values_list('name','name')
 
     if request.method == 'POST':
         phone_number = request.POST.get('phoneNo')
-        # customer_name = request.POST.get('customerName')
         status = request.POST.get('status')
         payment_method = request.POST.get('paymentMethod')
-        amount = request.POST.get('amount')
+        cashAmount = request.POST.get('cashAmount')
+        mpesaAmount = request.POST.get('mpesaAmount')
+        description = request.POST.get('description')
 
-        # Find the customer based on the provided phone number
+        total_amount = int(cashAmount) + int(mpesaAmount)
+        
         try:
             customer = Customer.objects.get(phone_number=phone_number)
         except Customer.DoesNotExist:
-            # Handle the case where the customer does not exist or provide appropriate feedback
             return HttpResponse("Customer with this phone number does not exist")
 
-        # Create a new order associated with the customer
         new_order = Order(
-            customer=customer,  # Associate the order with the customer
-            total_amount=amount,  # Use the appropriate field from your model
+            customer=customer,  
+            total_amount=total_amount,  
+            cash_amount=cashAmount,  
+            mpesa_amount=mpesaAmount,  
             status=status,
             payment_method=payment_method,
-            order_date=timezone.now()  # You can set the order date as needed
+            order_date=timezone.now(),
+            description = description  
         )
         
         new_order.save()
