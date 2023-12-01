@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+ 
+{% block title %}Edit profile{% endblock %}
+
+{% block content %}
+
+
+<div class="page-section">
+    <div class="container">
+        <div class="addpost">
+            {% if user.is_authenticated %}
+            
+                <div class="text-center wow fadeInUp">
+                    <!-- <div class="subhead">Edit Profile</div> -->
+                    <h2 class="title-section">Edit Profile</h2>
+                    <div class="divider mx-auto"></div>
+                </div>
+                
+
+                <div class="form-group">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.media }}
+                    {{ form.as_p }}
+                    <a href="{% url 'change_password' %}">Change Password</a><br><br>
+                    <button class="btn btn-secondary">Update profile</button>
+                </form>
+                </div>
+
+                <script>
+                    var name = '{{ user.id }}';
+                    document.getElementById("elder").value = name;
+                </script>
+            {% else %}
+                <h3>You are not allowed here...and you know it</h3>
+            {% endif %}
+                
+                </div>
+            </div>
+                </div>
+    </div>
+        </div>
+{% endblock %}
