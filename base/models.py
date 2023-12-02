@@ -75,6 +75,10 @@ class Order(models.Model):
             )
 
             income.save()
+
+            loyalty_points = int(self.total_amount / 1000)
+            self.customer.loyalty_points += loyalty_points
+            self.customer.save()
             
         if is_new_order:
             transaction = Tranzaction(

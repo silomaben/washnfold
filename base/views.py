@@ -297,7 +297,17 @@ def Orders(request):
         mpesaAmount = request.POST.get('mpesaAmount')
         description = request.POST.get('description')
 
-        total_amount = int(cashAmount) + int(mpesaAmount)
+
+        if(cashAmount):
+            cashAmount = int(cashAmount)
+        else:
+            cashAmount = 0
+        if(mpesaAmount):
+            mpesaAmount = int(mpesaAmount)
+        else:
+            mpesaAmount = 0
+        
+        total_amount = cashAmount + mpesaAmount
         
         try:
             customer = Customer.objects.get(phone_number=phone_number)
