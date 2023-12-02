@@ -2,6 +2,14 @@ from django.db import models
 from  django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, null=True , on_delete=models.CASCADE )
+    contact = models.CharField(max_length=100)
+    date_of_hire = models.DateField()
+    profile_pic = models.ImageField(null=True,blank=True,upload_to="images/profile/")
 
 # Customers table
 class Customer(models.Model):
