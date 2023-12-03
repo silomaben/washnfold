@@ -16,7 +16,7 @@
         <!-- Modal content -->
         <div class="modal-content">
         <span class="close">&times;</span>
-        <h3>Create an Order</h3>
+        <h3 id="modalHeading">Create an Order</h3>
         <form id="ordersForm" method="post">
             {% csrf_token %}
             <div class="expenseForm">
@@ -142,10 +142,11 @@
                             <span class="text-secondary text-xs font-weight-bold">{{ order.total_amount }}</span>
                         </td>
                         <td class="align-middle">
-                            <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                            Edit
-                            </a>
-                        </td>
+                          <a href="javascript:;" class="text-secondary font-weight-bold text-xs edit-link" data-order-id="{{ order.id }}" data-toggle="tooltip" data-original-title="Edit user">
+                              Edit
+                          </a>
+                      </td>
+                      
                         </tr>
                     </tbody>
                   {% endfor %}
@@ -291,6 +292,7 @@
     // Get the modal
     var modal = document.getElementById("myModal");
     
+    
     // Get the button that opens the modal
     var btn = document.getElementById("myBtn");
     
@@ -428,6 +430,40 @@
           });
       });
   </script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Click event for the "Edit" link
+        $(".edit-link").on("click", function() {
+            var orderId = $(this).data("order-id");
+
+            // Log the order ID to the console for debugging
+            console.log("Order ID:", orderId);
+
+            // Set the form action to the update URL
+            $("#ordersForm").attr("action", "/update_order/" + orderId + "/");
+            $("#modalHeading").text("Edit Order");
+            // Set the submit button text to "Update"
+            $("input[type=submit]").val("Update");
+
+            var modal = document.getElementById("myModal");
+
+            modal.style.display = "block";
+
+
+        });
+
+        // Your existing code to handle modal close button (not shown in your provided HTML)
+        $(".close").on("click", function() {
+            // Reset the form action to the create URL
+            $("#ordersForm").attr("action", "/create_order/");
+
+            // Reset the submit button text to "Submit"
+            $("input[type=submit]").val("Submit");
+        });
+    });
+</script>
+
 </body>
 
 </html>

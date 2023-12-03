@@ -114,11 +114,11 @@
           <div class="card-body">
             <h6 class="mb-0 "> profits/day </h6>
             <!-- <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) increase in today sales. </p> -->
-            <!-- <hr class="dark horizontal">
+             <!-- <hr class="dark horizontal">  -->
             <div class="d-flex ">
-              <i class="material-icons text-sm my-auto me-1">schedule</i>
-              <p class="mb-0 text-sm"> updated 4 min ago </p>
-            </div> -->
+              <input type="date" id="selectedDate" name="selectedDate">
+              <!-- <p class="mb-0 text-sm"> updated 4 min ago </p> -->
+            </div> 
           </div>
         </div>
       </div>
@@ -436,15 +436,63 @@
 </script>
 <script>
  $(document).ready(function () {
+
+  
+
+  
+    // Set the initial value of the input field to the current date
+    var currentDate = new Date().toISOString().split('T')[0];
+    $('#selectedDate').val(currentDate);
+
+    // Call the function with the initial date
+    requestProfits(currentDate);
+
+    // Event listener for date input change
+    $('#selectedDate').on('change', function () {
+      // Get the selected date value
+      var selectedDate = $(this).val();
+
+      // Call your function with the selected date
+      requestProfits(selectedDate);
+    });
+
+    let chartInstance = null;
+  function requestProfits(date){
+    
         // Make an AJAX request to get daily profits data
         $.ajax({
             url: '/ajax_daily_profits/',
             type: 'GET',
             dataType: 'json',
+            data: {
+                selected_date: date || null, 
+            },
             success: function (data) {
-                // Retrieve data from the AJAX response
-                var daysList = data.days_list;
-                var dailyProfitsList = data.daily_profits_list;
+            // Retrieve data from the AJAX response
+            var weeklyProfits = data.weekly_profits;
+            var daysList = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            
+            // Cut the first item and store it in a variable
+            var firstItem = weeklyProfits.shift();
+
+            // Append the first item as the last item
+            weeklyProfits.push(firstItem);
+
+            
+// Extract profits from the modified weeklyProfits array
+var extractedProfits = weeklyProfits.map(function (dayProfit) {
+    return isNaN(dayProfit[1]) ? 0 : parseInt(dayProfit[1]);
+});
+
+// Reverse the list of profits
+var reversedProfits = extractedProfits.reverse();
+
+console.log(`Modified Weekly Profits: ${weeklyProfits}`);
+console.log(`Extracted Profits: ${extractedProfits}`);
+console.log(`Reversed Profits: ${reversedProfits}`);
+
+
+   
 
                 // Your logic to handle the data
                 // console.log(daysList);
@@ -453,9 +501,13 @@
 
                 // labels: daysList,
               // Your chart creation logic here
+
+              if (chartInstance) {
+                  chartInstance.destroy();
+              }
               var ctx = document.getElementById("chart-line").getContext("2d");
 
-              new Chart(ctx, {
+              chartInstance = new Chart(ctx, {
       type: "line",
       data: {
         labels: daysList,
@@ -471,7 +523,7 @@
           borderWidth: 4,
           backgroundColor: "transparent",
           fill: true,
-          data: dailyProfitsList,
+          data: reversedProfits,
           maxBarThickness: 6
 
         }],
@@ -540,107 +592,113 @@
               console.log('Error fetching data:', error);
           }
       });
+  }
+        
   });
 </script>
 <script>
   $(document).ready(function () {
+    requestOrders()
+    
       // Make an AJAX request to get order data
-      $.ajax({
-          url: '/ajax_order_data/',
-          type: 'GET',
-          dataType: 'json',
-          success: function (data) {
-              // Retrieve data from the AJAX response
-              var daysList = data.days_list;
-              var totalOrdersList = data.total_orders_list;
+      function requestOrders(date){
+          $.ajax({
+            url: '/ajax_order_data/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Retrieve data from the AJAX response
+                var daysList = data.days_list;
+                var totalOrdersList = data.total_orders_list;
 
-              // console.log(daysList,totalOrdersList);
+                // console.log(daysList,totalOrdersList);
 
-              // Your chart creation logic here
-              var ctx = document.getElementById("chart-bars").getContext("2d");
+                // Your chart creation logic here
+                var ctx = document.getElementById("chart-bars").getContext("2d");
 
-              new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: daysList,
-            datasets: [{
-                label: "Sales",
-                tension: 0.4,
-                borderWidth: 0,
-                borderRadius: 4,
-                borderSkipped: false,
-                backgroundColor: "rgba(255, 255, 255, .8)",
-                data: totalOrdersList,
-                maxBarThickness: 6
-            }],
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5],
-              color: 'rgba(255, 255, 255, .2)'
-            },
-            ticks: {
-              suggestedMin: 0,
-              suggestedMax: 500,
-              beginAtZero: true,
-              padding: 10,
-              font: {
-                size: 14,
-                weight: 300,
-                family: "Roboto",
-                style: 'normal',
-                lineHeight: 2
-              },
-              color: "#fff"
-            },
+                new Chart(ctx, {
+          type: "bar",
+          data: {
+              labels: daysList,
+              datasets: [{
+                  label: "Sales",
+                  tension: 0.4,
+                  borderWidth: 0,
+                  borderRadius: 4,
+                  borderSkipped: false,
+                  backgroundColor: "rgba(255, 255, 255, .8)",
+                  data: totalOrdersList,
+                  maxBarThickness: 6
+              }],
           },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5],
-              color: 'rgba(255, 255, 255, .2)'
-            },
-            ticks: {
-              display: true,
-              color: '#f8f9fa',
-              padding: 10,
-              font: {
-                size: 14,
-                weight: 300,
-                family: "Roboto",
-                style: 'normal',
-                lineHeight: 2
-              },
+          options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
             }
           },
-        },
-      },
-    });
+          interaction: {
+            intersect: false,
+            mode: 'index',
           },
-          error: function (error) {
-              console.log('Error fetching data:', error);
-          }
+          scales: {
+            y: {
+              grid: {
+                drawBorder: false,
+                display: true,
+                drawOnChartArea: true,
+                drawTicks: false,
+                borderDash: [5, 5],
+                color: 'rgba(255, 255, 255, .2)'
+              },
+              ticks: {
+                suggestedMin: 0,
+                suggestedMax: 500,
+                beginAtZero: true,
+                padding: 10,
+                font: {
+                  size: 14,
+                  weight: 300,
+                  family: "Roboto",
+                  style: 'normal',
+                  lineHeight: 2
+                },
+                color: "#fff"
+              },
+            },
+            x: {
+              grid: {
+                drawBorder: false,
+                display: true,
+                drawOnChartArea: true,
+                drawTicks: false,
+                borderDash: [5, 5],
+                color: 'rgba(255, 255, 255, .2)'
+              },
+              ticks: {
+                display: true,
+                color: '#f8f9fa',
+                padding: 10,
+                font: {
+                  size: 14,
+                  weight: 300,
+                  family: "Roboto",
+                  style: 'normal',
+                  lineHeight: 2
+                },
+              }
+            },
+          },
+        },
       });
+            },
+            error: function (error) {
+                console.log('Error fetching data:', error);
+            }
+        });
+      }
   });
 </script>
   <script>

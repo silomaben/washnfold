@@ -204,42 +204,57 @@ def ajax_yearly_profits(request):
 
 
 def ajax_daily_profits(request):
-   # Calculate the end date (today)
-    end_date = timezone.now().date()
+    selected_date = request.GET.get("selected_date")
 
-    # Calculate the start date (7 days ago)
-    start_date = end_date - timedelta(days=7)
+    if selected_date:
+        selected_date = timezone.datetime.strptime(selected_date, "%Y-%m-%d").date()
+    else:
+        # If the selected date is not provided, use the current date
+        selected_date = timezone.now().date()
 
-    # Filter transactions for the last 7 days
-    transactions_last_7_days = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+    # Calculate the start date (Sunday) of the selected week
+    start_date = selected_date - timedelta(days=selected_date.weekday())
+
+    # Filter transactions for the selected week
+    transactions_for_week = Tranzaction.objects.filter(
+        transaction_date__range=[start_date, start_date + timedelta(days=6)]
+    )
 
     # Calculate profits for each day
-    daily_profits = []
+    weekly_profits = []
 
     for i in range(7):
-        date_for_iteration = end_date - timedelta(days=i)
-        
+        date_for_iteration = start_date + timedelta(days=i)
+
         # Filter transactions for the current date
-        transactions_for_date = transactions_last_7_days.filter(transaction_date=date_for_iteration)
+        transactions_for_date = transactions_for_week.filter(
+            transaction_date=date_for_iteration
+        )
 
         # Calculate total income and total expenses for the current date
-        total_income_for_date = sum(transaction.amount for transaction in transactions_for_date if transaction.type == 'income')
-        total_expenses_for_date = sum(transaction.amount for transaction in transactions_for_date if transaction.type == 'expense')
+        total_income_for_date = sum(
+            transaction.amount for transaction in transactions_for_date if transaction.type == 'income'
+        )
+        total_expenses_for_date = sum(
+            transaction.amount for transaction in transactions_for_date if transaction.type == 'expense'
+        )
 
         # Calculate net income for the current date
         net_income_for_date = total_income_for_date - total_expenses_for_date
 
-        # Append the result as a tuple to the daily_profits list
-        daily_profits.append((date_for_iteration.strftime('%A')[0], net_income_for_date))
+        print(date_for_iteration)
+        print(net_income_for_date)
 
-    # Reverse the lists before sending them in the AJAX response
-    days_list = [day[0] for day in reversed(daily_profits)]
-    daily_profits_list = [day[1] for day in reversed(daily_profits)]
+
+        # Append the result as a tuple to the weekly_profits list
+        weekly_profits.append((date_for_iteration.strftime('%A')[0], int(net_income_for_date)))
+
+    # Reverse the list before sending it in the AJAX response
+    weekly_profits = list(reversed(weekly_profits))
 
     # Return the result as JSON
     data = {
-        'days_list': days_list,
-        'daily_profits_list': daily_profits_list,
+        'weekly_profits': weekly_profits,
     }
 
     return JsonResponse(data)
@@ -284,56 +299,57 @@ def get_customer_list(request):
 
         # print(f"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  :   {customer_list}")
         return JsonResponse({'customers': customer_list})
-
 def Orders(request):
     orders = Order.objects.select_related('customer')
-    choices = PaymentMethod.objects.all().values_list('name','name')
+    choices = PaymentMethod.objects.all().values_list('name', 'name')
 
     if request.method == 'POST':
-        phone_number = request.POST.get('phoneNo')
+        order_id_to_edit = request.POST.get('order_id')
+
+        # Check if it's a new order or an existing order to edit
+        if order_id_to_edit:
+            # Editing an existing order
+            order_to_edit = get_object_or_404(Order, id=order_id_to_edit)
+        else:
+            # Creating a new order
+            phone_number = request.POST.get('phoneNo')
+
+            if not phone_number:
+                return HttpResponse("Phone number is required for creating a new order.")
+
+            try:
+                customer = Customer.objects.get(phone_number=phone_number)
+            except Customer.DoesNotExist:
+                return HttpResponse("Customer with this phone number does not exist")
+
+            order_to_edit = Order(customer=customer)
+
+        # Extract other form data
         status = request.POST.get('status')
         payment_method = request.POST.get('paymentMethod')
         cashAmount = request.POST.get('cashAmount')
         mpesaAmount = request.POST.get('mpesaAmount')
         description = request.POST.get('description')
 
-
-        if(cashAmount):
-            cashAmount = int(cashAmount)
-        else:
-            cashAmount = 0
-        if(mpesaAmount):
-            mpesaAmount = int(mpesaAmount)
-        else:
-            mpesaAmount = 0
-        
+        # Process amounts
+        cashAmount = int(cashAmount) if cashAmount else 0
+        mpesaAmount = int(mpesaAmount) if mpesaAmount else 0
         total_amount = cashAmount + mpesaAmount
-        
-        try:
-            customer = Customer.objects.get(phone_number=phone_number)
-        except Customer.DoesNotExist:
-            return HttpResponse("Customer with this phone number does not exist")
 
-        new_order = Order(
-            customer=customer,  
-            total_amount=total_amount,  
-            cash_amount=cashAmount,  
-            mpesa_amount=mpesaAmount,  
-            status=status,
-            payment_method=payment_method,
-            order_date=timezone.now(),
-            description = description  
-        )
-        
-        new_order.save()
+        # Update or create the order
+        order_to_edit.total_amount = total_amount
+        order_to_edit.cash_amount = cashAmount
+        order_to_edit.mpesa_amount = mpesaAmount
+        order_to_edit.status = status
+        order_to_edit.payment_method = payment_method
+        order_to_edit.order_date = timezone.now()
+        order_to_edit.description = description
 
-        
+        order_to_edit.save()
 
         return redirect('orders')
-        
-    return render(request,'orders.html',{'orders': orders, "choices":choices})
 
-
+    return render(request, 'orders.html', {'orders': orders, "choices": choices})
 
 def Expenses(request):
 
