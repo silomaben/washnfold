@@ -33,6 +33,13 @@ class TimeRangeForm(forms.Form):
         ('custom_range', 'Custom Range'),
     ]
 
+    status_choices = [
+        ('', 'All(status)'),  # Empty string represents all statuses
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
     time_range = forms.ChoiceField(choices=time_range_choices, label='Select Time Range')
     custom_start_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
@@ -44,4 +51,6 @@ class TimeRangeForm(forms.Form):
         required=False,
         label='End Date'
     )
+
+    status = forms.ChoiceField(choices=status_choices, required=False, label='Select Status')
 

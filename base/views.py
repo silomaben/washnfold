@@ -38,9 +38,9 @@ def Home(request):
     customers_list.reverse()
     total_orders_list.reverse()
 
-    print(days_list)
-    print(customers_list)
-    print(total_orders_list)
+    # print(days_list)
+    # print(customers_list)
+    # print(total_orders_list)
 
     context = {
         'days_list': days_list,
@@ -60,7 +60,7 @@ def ViewCustomer(request, customer_id):
         'customer': customer,
         'orders': orders,
     }
-    print(customer)
+    # print(customer)
 
     return render(request, 'customer_detail.html',context)
 
@@ -126,10 +126,15 @@ def Transactions(request):
             start_date = custom_start_date
             end_date = custom_end_date
 
+        # if start_date:
+        #     transactions = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+        # else:
+        #     transactions = Tranzaction.objects.all()
+
         if start_date:
-            transactions = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
+            transactions = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date]).order_by('-transaction_date')
         else:
-            transactions = Tranzaction.objects.all()
+            transactions = Tranzaction.objects.all().order_by('-transaction_date')
 
         total_income = sum(transaction.amount for transaction in transactions if transaction.type == 'income')
         total_expenses = sum(transaction.amount for transaction in transactions if transaction.type == 'expense')
@@ -146,7 +151,7 @@ def Transactions(request):
 
         return render(request, 'transactions.html', context)
 
-    transactions = Tranzaction.objects.filter(transaction_date=timezone.now().date())
+    transactions = Tranzaction.objects.filter(transaction_date=timezone.now().date()).order_by('-transaction_date')
     total_income = sum(transaction.amount for transaction in transactions if transaction.type == 'income')
     total_expenses = sum(transaction.amount for transaction in transactions if transaction.type == 'expense')
     net_income = total_income - total_expenses
@@ -166,22 +171,14 @@ def ajax_yearly_profits(request):
     current_date = datetime.now().date()
     current_year = current_date.year
 
-    # Set the start_date to the beginning of the current year
     start_date = datetime(current_year, 1, 1).date()
-
-    # Set the end_date to the end of the current year
     end_date = datetime(current_year, 12, 31).date()
 
-    # Filter transactions for the current year
     transactions_current_year = Tranzaction.objects.filter(transaction_date__range=[start_date, end_date])
-
-    # Create a list of all months in the current year
     all_months = [datetime(current_year, month, 1).strftime('%b') for month in range(1, 13)]
 
-    # Initialize a dictionary to store monthly profits
     monthly_profits = {month: 0 for month in all_months}
 
-    # Update profits based on transactions
     for transaction in transactions_current_year:
         month_key = transaction.transaction_date.strftime('%b')
         if transaction.type == 'income':
@@ -189,7 +186,6 @@ def ajax_yearly_profits(request):
         elif transaction.type == 'expense':
             monthly_profits[month_key] -= transaction.amount
 
-    # Prepare data for JsonResponse
     months_list = list(monthly_profits.keys())
     profits_list = list(monthly_profits.values())
 
@@ -197,8 +193,6 @@ def ajax_yearly_profits(request):
         'months_list': months_list,
         'profits_list': profits_list,
     }
-
-    print(data)
 
     return JsonResponse(data)
 
@@ -209,29 +203,23 @@ def ajax_daily_profits(request):
     if selected_date:
         selected_date = timezone.datetime.strptime(selected_date, "%Y-%m-%d").date()
     else:
-        # If the selected date is not provided, use the current date
         selected_date = timezone.now().date()
 
-    # Calculate the start date (Sunday) of the selected week
     start_date = selected_date - timedelta(days=selected_date.weekday())
 
-    # Filter transactions for the selected week
     transactions_for_week = Tranzaction.objects.filter(
         transaction_date__range=[start_date, start_date + timedelta(days=6)]
     )
 
-    # Calculate profits for each day
     weekly_profits = []
 
     for i in range(7):
         date_for_iteration = start_date + timedelta(days=i)
 
-        # Filter transactions for the current date
         transactions_for_date = transactions_for_week.filter(
             transaction_date=date_for_iteration
         )
 
-        # Calculate total income and total expenses for the current date
         total_income_for_date = sum(
             transaction.amount for transaction in transactions_for_date if transaction.type == 'income'
         )
@@ -239,17 +227,13 @@ def ajax_daily_profits(request):
             transaction.amount for transaction in transactions_for_date if transaction.type == 'expense'
         )
 
-        # Calculate net income for the current date
         net_income_for_date = total_income_for_date - total_expenses_for_date
 
         print(date_for_iteration)
         print(net_income_for_date)
 
-
-        # Append the result as a tuple to the weekly_profits list
         weekly_profits.append((date_for_iteration.strftime('%A')[0], int(net_income_for_date)))
 
-    # Reverse the list before sending it in the AJAX response
     weekly_profits = list(reversed(weekly_profits))
 
     # Return the result as JSON
@@ -300,11 +284,68 @@ def get_customer_list(request):
         # print(f"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  :   {customer_list}")
         return JsonResponse({'customers': customer_list})
 def Orders(request):
-    orders = Order.objects.select_related('customer')
+    
     choices = PaymentMethod.objects.all().values_list('name', 'name')
+    orders = Order.objects.filter(order_date__range=(timezone.now().date(),timezone.now().date())).select_related('customer')
+
+    
+    time_range = request.GET.get('time_range', 'today')
+
+    form = TimeRangeForm(request.GET, initial={'time_range': time_range})
+
+    if form.is_valid():
+        custom_start_date = form.cleaned_data.get('custom_start_date')
+        custom_end_date = form.cleaned_data.get('custom_end_date')
+        
+        end_date = timezone.now().date()
+        start_date = None
+
+        if time_range == 'this_year':
+            start_date = datetime(end_date.year, 1, 1).date()
+        elif time_range == 'this_month':
+            start_date = datetime(end_date.year, end_date.month, 1).date()
+        elif time_range == 'this_week':
+            start_date = end_date - timedelta(days=end_date.weekday())
+        elif time_range == 'today':
+            start_date = end_date
+        elif time_range == 'last_month':
+            last_month = end_date.month - 1
+            year = end_date.year
+
+            if last_month < 1:
+                last_month = 12
+                year -= 1
+
+            start_date = datetime(year, last_month, 1).date()
+            end_date = start_date.replace(day=1) - timedelta(days=1)
+        elif time_range == 'custom_range' and custom_start_date and custom_end_date:
+            start_date = custom_start_date
+            end_date = custom_end_date
+
+    
+        if start_date:
+            orders = Order.objects.filter(order_date__range=[start_date, end_date]).select_related('customer').order_by('-order_date')
+        else:
+            orders = Order.objects.select_related('customer').order_by('-order_date')
+
+
+        status_filter = request.GET.get('status')
+        
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+
 
     if request.method == 'POST':
-        order_id_to_edit = request.POST.get('order_id')
+        order_id_to_delete = request.POST.get('order_id')
+        delete_action = request.POST.get('delete_action')
+
+        if delete_action:
+            # Delete action requested
+            order_to_delete = get_object_or_404(Order, id=order_id_to_delete)
+            order_to_delete.delete()
+            return redirect('orders')
+        
+        order_id_to_edit = request.POST.get('submitOrder')
 
         # Check if it's a new order or an existing order to edit
         if order_id_to_edit:
@@ -332,8 +373,8 @@ def Orders(request):
         description = request.POST.get('description')
 
         # Process amounts
-        cashAmount = int(cashAmount) if cashAmount else 0
-        mpesaAmount = int(mpesaAmount) if mpesaAmount else 0
+        cashAmount = float(cashAmount) if cashAmount else 0
+        mpesaAmount = float(mpesaAmount) if mpesaAmount else 0
         total_amount = cashAmount + mpesaAmount
 
         # Update or create the order
@@ -348,8 +389,14 @@ def Orders(request):
         order_to_edit.save()
 
         return redirect('orders')
+    
+    context = {
+        'form': form,
+        'orders': orders, 
+        "choices": choices
+    }
 
-    return render(request, 'orders.html', {'orders': orders, "choices": choices})
+    return render(request, 'orders.html', context)
 
 def Expenses(request):
 
@@ -360,7 +407,7 @@ def Expenses(request):
     for item in choices:
         choice_list.append(item)
 
-    expenses = Expense.objects.all()
+    expenses = Expense.objects.all().order_by('-expense_date')
 
     if request.method == 'POST':
         description = request.POST.get('description')

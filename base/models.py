@@ -18,7 +18,7 @@ class Customer(models.Model):
     phone_number = models.CharField(max_length=15,unique=True)
     email = models.EmailField(null=True)
     # address = models.TextField()
-    loyalty_points = models.IntegerField(default=0)
+    loyalty_points = models.FloatField(default=0.0)
     registration_date = models.DateField()
 
     def __str__(self):
@@ -61,12 +61,19 @@ class Order(models.Model):
     cash_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     mpesa_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+    def delete(self, *args, **kwargs):
+        # Handle pre-delete logic for Order instances
+        tranzactions = Tranzaction.objects.filter(content_type=ContentType.objects.get_for_model(self), object_id=self.id)
+        tranzactions.delete()
+
+        super(Order, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         is_new_order = not self.pk
         super(Order, self).save(*args, **kwargs)
 
-        if self.status == 'completed':
+        # if self.status == 'completed':
+        if is_new_order:
             income = Income.objects.create(
                 order=self,
                 payment_date=timezone.now(), 
@@ -74,13 +81,15 @@ class Order(models.Model):
                 payment_method=self.payment_method
             )
 
+            print('im here')
+
             income.save()
 
-            loyalty_points = int(self.total_amount / 1000)
+            loyalty_points = self.total_amount / 1000.0
+            print("EEEEEEEEEEEEEEEEEEEEEEEEEE/n/n/nn\n\n\n\n\n\n\n\n\n")
+            print(loyalty_points)
             self.customer.loyalty_points += loyalty_points
             self.customer.save()
-            
-        if is_new_order:
             transaction = Tranzaction(
                 transaction_date=self.order_date,
                 amount=self.total_amount,
@@ -88,6 +97,8 @@ class Order(models.Model):
                 type='income'
             )
             transaction.save()
+            
+        
            
 
 
