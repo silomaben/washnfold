@@ -274,21 +274,28 @@ def get_customer_list(request):
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' and request.method == 'GET':
         name = request.GET.get('customer_name', '')
         phone_number = request.GET.get('customer_phoneNo', '')
-        print('print:'+phone_number)
-        # Create a query that filters customers by name or phone number
-        customers = Customer.objects.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name) | Q(phone_number__exact=str(phone_number)))
-        print('cust: '+str(customers))
-        
-        customer_list = [{'id': customer.id, 'first_name': customer.first_name, 'last_name': customer.last_name , 'phone': customer.phone_number} for customer in customers]
+        print('print:' + phone_number)
 
-        # print(f"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  :   {customer_list}")
+        # Create a query that filters customers by name or phone number
+        customers = Customer.objects.all()
+
+        if phone_number:
+            customers = customers.filter(Q(phone_number__icontains=phone_number))
+            print(f"Phone Number: {phone_number}")
+            print(f"Matching Customers by Phone: {customers}")
+
+        if name:
+            customers = customers.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
+            print(f"Matching Customers by Name: {customers}")
+
+        customer_list = [{'id': customer.id, 'first_name': customer.first_name, 'last_name': customer.last_name, 'phone': customer.phone_number} for customer in customers]
         return JsonResponse({'customers': customer_list})
+    
 def Orders(request):
     
     choices = PaymentMethod.objects.all().values_list('name', 'name')
     orders = Order.objects.filter(order_date__range=(timezone.now().date(),timezone.now().date())).select_related('customer')
 
-    
     time_range = request.GET.get('time_range', 'today')
 
     form = TimeRangeForm(request.GET, initial={'time_range': time_range})
