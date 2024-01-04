@@ -351,6 +351,12 @@ def Orders(request):
 
         if delete_action:
             order_to_delete = get_object_or_404(Order, id=order_id_to_delete)
+
+            print("/n/n/n/n/n/n/n/n//n/n/n/")
+            print(order_id_to_delete)
+            print(type(order_id_to_delete))
+            print("/n/n/n/n/n/n/n/n//n/n/n/")
+
             order_to_delete.delete()
             return redirect('orders')
         

@@ -3,7 +3,8 @@ from  django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-
+import uuid
+from decimal import Decimal
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True , on_delete=models.CASCADE )
@@ -26,6 +27,7 @@ class Customer(models.Model):
 
 # Expenses Table
 class Expense(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     expense_date = models.DateField()
@@ -38,11 +40,11 @@ class Expense(models.Model):
 
         # If the order status is 'completed' and it's a new order, create an associated income record
         if is_new_expense:
-            expense = Expense.objects.get(pk=1)
+            # expense = Expense.objects.get(pk=1)
             transaction = Tranzaction(
                 transaction_date=self.expense_date,
                 amount=self.amount,
-                content_object=expense,  # Associate with an Order
+                content_object=self,  # Associate with an Order
                 type='expense'  # Or 'income' as needed
             )
             transaction.save()
@@ -52,6 +54,7 @@ class Expense(models.Model):
 
 # Orders Table
 class Order(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_date = models.DateField()
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed')])
@@ -61,42 +64,54 @@ class Order(models.Model):
     cash_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     mpesa_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+    
     def delete(self, *args, **kwargs):
-        # Handle pre-delete logic for Order instances
-        tranzactions = Tranzaction.objects.filter(content_type=ContentType.objects.get_for_model(self), object_id=self.id)
-        tranzactions.delete()
+        # Delete associated Tranzaction instances
+        Tranzaction.objects.filter(
+            content_type=ContentType.objects.get_for_model(self),
+            object_id=self.id
+        ).delete()
 
+        # Now delete the Order instance
         super(Order, self).delete(*args, **kwargs)
+
+    
 
     def save(self, *args, **kwargs):
         is_new_order = not self.pk
         super(Order, self).save(*args, **kwargs)
 
-        # if self.status == 'completed':
-        if is_new_order:
-            income = Income.objects.create(
-                order=self,
-                payment_date=timezone.now(), 
-                amount=self.total_amount,
-                payment_method=self.payment_method
-            )
-
-            print('im here')
-
-            income.save()
-
-            loyalty_points = self.total_amount / 1000.0
-            print("EEEEEEEEEEEEEEEEEEEEEEEEEE/n/n/nn\n\n\n\n\n\n\n\n\n")
-            print(loyalty_points)
-            self.customer.loyalty_points += loyalty_points
-            self.customer.save()
+        # Check if the order is marked as completed
+        if self.status == 'completed':
+            # Create a new Tranzaction instance
             transaction = Tranzaction(
                 transaction_date=self.order_date,
                 amount=self.total_amount,
-                content_object=self, 
+                content_object=self,
                 type='income'
             )
             transaction.save()
+
+            # Additional logic when the order is marked as completed
+            income = Income.objects.create(
+                order=self,
+                payment_date=timezone.now(),
+                amount=self.total_amount,
+                payment_method=self.payment_method
+            )
+            income.save()
+
+            loyalty_points = Decimal(self.total_amount) / Decimal(1000.0)
+            self.customer.loyalty_points += loyalty_points
+            self.customer.save()
+
+        # Check if the order status is updated to something other than completed
+        elif not is_new_order and self.status != 'completed':
+            # Delete existing Tranzaction instances
+            Tranzaction.objects.filter(
+                content_type=ContentType.objects.get_for_model(Order),
+                object_id=self.id
+            ).delete()
             
         
            
@@ -104,6 +119,7 @@ class Order(models.Model):
 
 
 class Income(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -131,18 +147,20 @@ class User(models.Model):
 
 # Transactions Table
 class Transaction(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     type = models.CharField(max_length=10, choices=[('income', 'Income'), ('expense', 'Expense')])
     transaction_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Tranzaction(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     transaction_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     
     # Generic Foreign Key fields to reference Order and Expense
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
     
     type = models.CharField(

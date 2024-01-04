@@ -123,6 +123,7 @@
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
                       <th class="text-secondary opacity-7"></th>
                       <th class="text-secondary opacity-7"></th>
+                      <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
                   {% for order in orders %}
@@ -162,10 +163,16 @@
                               Edit
                           </a>
                       </td>
+                       
                       <td class="align-middle">
                         <!-- Use JavaScript to show confirmation dialog before form submission -->
                         <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ order.id }}')">Delete</button>
                       </td>
+                      <td class="align-middle">
+                        <a target="_blank" href="{% url 'receipt' order_id=order.id %}" class="text-secondary font-weight-bold text-xs edit-link" data-order-id="{{ order.id }}" data-toggle="tooltip" data-original-title="Edit user">
+                            Receipt Print
+                        </a>
+                    </td>
                        <!-- Add a hidden form for each order with a unique ID -->
                       <form method="post" id="deleteOrderForm_{{ order.id }}" action="{% url 'orders' %}" style="display: none;">
                         {% csrf_token %}
