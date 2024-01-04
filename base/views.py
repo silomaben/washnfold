@@ -15,6 +15,16 @@ from django.utils import timezone
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum, Q
 
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle,TA_CENTER
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.platypus import Image
+
+
+
 def Home(request):
     current_date = timezone.now().date()
 
@@ -241,6 +251,8 @@ def ajax_daily_profits(request):
         'weekly_profits': weekly_profits,
     }
 
+    print(data)
+
     return JsonResponse(data)
 
 def ajax_order_data(request):
@@ -274,25 +286,19 @@ def get_customer_list(request):
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' and request.method == 'GET':
         name = request.GET.get('customer_name', '')
         phone_number = request.GET.get('customer_phoneNo', '')
-        print('print:' + phone_number)
 
-        # Create a query that filters customers by name or phone number
         customers = Customer.objects.all()
 
         if phone_number:
             customers = customers.filter(Q(phone_number__icontains=phone_number))
-            print(f"Phone Number: {phone_number}")
-            print(f"Matching Customers by Phone: {customers}")
 
         if name:
             customers = customers.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
-            print(f"Matching Customers by Name: {customers}")
 
         customer_list = [{'id': customer.id, 'first_name': customer.first_name, 'last_name': customer.last_name, 'phone': customer.phone_number} for customer in customers]
         return JsonResponse({'customers': customer_list})
     
 def Orders(request):
-    
     choices = PaymentMethod.objects.all().values_list('name', 'name')
     orders = Order.objects.filter(order_date__range=(timezone.now().date(),timezone.now().date())).select_related('customer')
 
@@ -328,33 +334,28 @@ def Orders(request):
         elif time_range == 'custom_range' and custom_start_date and custom_end_date:
             start_date = custom_start_date
             end_date = custom_end_date
-
     
         if start_date:
             orders = Order.objects.filter(order_date__range=[start_date, end_date]).select_related('customer').order_by('-order_date')
         else:
             orders = Order.objects.select_related('customer').order_by('-order_date')
 
-
         status_filter = request.GET.get('status')
         
         if status_filter:
             orders = orders.filter(status=status_filter)
-
 
     if request.method == 'POST':
         order_id_to_delete = request.POST.get('order_id')
         delete_action = request.POST.get('delete_action')
 
         if delete_action:
-            # Delete action requested
             order_to_delete = get_object_or_404(Order, id=order_id_to_delete)
             order_to_delete.delete()
             return redirect('orders')
         
         order_id_to_edit = request.POST.get('submitOrder')
 
-        # Check if it's a new order or an existing order to edit
         if order_id_to_edit:
             # Editing an existing order
             order_to_edit = get_object_or_404(Order, id=order_id_to_edit)
@@ -435,3 +436,95 @@ def Expenses(request):
 
     return render(request,'expenses.html',{'expenses': expenses,'form':form,'choices':choice_list})
  
+
+def generate_pdf_receipt(request, order_id):
+    # Fetch the order details from the database
+    order = Order.objects.get(pk=order_id)
+
+    # Create a PDF response object
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=receipt_{order_id}.pdf'
+
+    # Define the custom width for the receipt (adjust as needed)
+    receipt_width = 3.14 * 72  # 1 inch = 72 points
+     # Split the orders.description string
+    description_data = order.description.split(',')
+
+    
+    # Determine the minimum number of rows
+    min_rows = 5
+
+    # Ensure there are enough items to meet the minimum rows
+    while len(description_data) < min_rows:
+        description_data.append('')  # Add empty items if needed
+
+    min_receipt_height = 5 * 79  # 5 inches as the minimum height
+    height_increment = 0.3 * 72  # Half inch for every extra record
+    dynamic_receipt_height = min_receipt_height + (len(description_data) - min_rows) * height_increment
+
+    doc = SimpleDocTemplate(response, pagesize=(receipt_width, dynamic_receipt_height), title=f'Receipt for {order.customer}',leftMargin=10, rightMargin=10, topMargin=1)
+    styles = getSampleStyleSheet()
+
+
+    # Business information
+    business_logo_path = "static\dashboard\img\washnfold.png"
+    business_phone = "0724-244-442"
+    business_location = "Lanet, Nakuru"
+
+    # Add business name and logo
+    elements = []
+    logo = Image(business_logo_path, width=150, height=53.55)
+    logo.hAlign = 'CENTER'  # Align the image to the center horizontally
+    elements.append(logo)
+
+
+    # Add business information
+    businessTitle = ParagraphStyle(styles['Normal'], alignment=TA_CENTER,spaceAfter=5)
+    businessTitle.fontSize = 14
+    elements.append(Paragraph(f"Laundry Receipt", ParagraphStyle(name='CenterTextWithPadding', parent=styles['Normal'], alignment=TA_CENTER, spaceBefore=10)))
+    elements.append(Paragraph(f"<b>Joe Wash N' Fold</b>", businessTitle))
+    elements.append(Paragraph(f"{business_phone}", ParagraphStyle(styles['Normal'], alignment=TA_CENTER,spaceAfter=2)))
+    elements.append(Paragraph(f"{business_location}", ParagraphStyle(styles['Normal'], alignment=TA_CENTER,spaceAfter=2)))
+
+    # Add content to the PDF
+    
+    
+
+    # Customer details
+    elements.append(Paragraph(f"{order.order_date}", ParagraphStyle(name='CenterTextWithPadding', parent=styles['Normal'], alignment=TA_CENTER,spaceAfter=10)))
+    elements.append(Paragraph(f"<b>Prepared for:</b> {order.customer}", ParagraphStyle(name='spaceAfterTxt', parent=styles['Normal'],spaceAfter=15)))
+
+
+    # Create a table with the split data
+    table_data = [['#', 'Item', '✔']]
+    for i, item in enumerate(description_data, start=1):
+        if item.strip():  # Only add numbers to non-empty items
+            table_data.append([i, item.strip(), ''])  # Using the checkmark symbol, adjust as needed
+        else:
+            table_data.append(['', item.strip(), ''])  # Add empty row without numbers
+
+
+    # Create the table
+    table = Table(table_data, colWidths=[20, 150, 20], hAlign='LEFT')
+
+    # Apply styles to the table
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+
+    # Add the table to elements
+    elements.append(table)
+
+    # Total Amount
+    elements.append(Paragraph(f"<b>Total Amount:</b> {order.total_amount}", ParagraphStyle(styles['Normal'], spaceBefore=10)))
+
+
+    # Build the PDF and return the response
+    doc.build(elements)
+
+    return response

@@ -411,13 +411,13 @@
             success: function (data) {
             // Retrieve data from the AJAX response
             var weeklyProfits = data.weekly_profits;
-            var daysList = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            var daysList = [ 'M', 'T', 'W', 'T', 'F', 'S','S'];
             
-            // Cut the first item and store it in a variable
-            var firstItem = weeklyProfits.shift();
+            // // Cut the first item and store it in a variable
+            // var firstItem = weeklyProfits.shift();
 
-            // Append the first item as the last item
-            weeklyProfits.push(firstItem);
+            // // Append the first item as the last item
+            // weeklyProfits.push(firstItem);
 
             
 // Extract profits from the modified weeklyProfits array

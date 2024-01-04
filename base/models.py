@@ -55,9 +55,9 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_date = models.DateField()
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed')])
-    payment_method = models.CharField(max_length=50)
+    payment_method = models.CharField(max_length=50,null=True)
     description = models.TextField(blank=True, null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     cash_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     mpesa_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
