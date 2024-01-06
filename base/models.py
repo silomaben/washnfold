@@ -35,22 +35,31 @@ class Expense(models.Model):
     payment_method = models.CharField(max_length=50)
 
     def save(self, *args, **kwargs):
-        is_new_expense = not self.pk  # Check if this is a new order being saved
+        is_new_expense = not self.pk
         super(Expense, self).save(*args, **kwargs)
+        transaction = Tranzaction(
+            transaction_date=self.expense_date,
+            amount=self.amount,
+            content_object=self,  # Associate with an Order
+            type='expense'  # Or 'income' as needed
+        )
+        transaction.save()
 
-        # If the order status is 'completed' and it's a new order, create an associated income record
-        if is_new_expense:
-            # expense = Expense.objects.get(pk=1)
-            transaction = Tranzaction(
-                transaction_date=self.expense_date,
-                amount=self.amount,
-                content_object=self,  # Associate with an Order
-                type='expense'  # Or 'income' as needed
-            )
-            transaction.save()
+            
+    def delete(self, *args, **kwargs):
+        # Delete associated Tranzaction instances
+        Tranzaction.objects.filter(
+            content_type=ContentType.objects.get_for_model(self),
+            object_id=self.id
+        ).delete()
+
+        # Now delete the Order instance
+        super(Expense, self).delete(*args, **kwargs)
+
+    
 
     def __str__(self):
-     return f'{self.description}'
+     return f' {self.amount}  -- {self.expense_date}-- {self.description}'
 
 # Orders Table
 class Order(models.Model):

@@ -199,7 +199,7 @@
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{% url 'home'%}">Home</a></li>
             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">{% block page-header %}{% endblock %}</li>
           </ol>
           <h6 class="font-weight-bolder mb-0">{% block page-header-1 %}{% endblock %}</h6>
@@ -299,12 +299,14 @@
                 </li>
               </ul>
             </li>
+            {% if user.is_authenticated %}
             <li class="nav-item d-flex align-items-center">
               <a href="" class="nav-link text-body font-weight-bold px-0">
                 <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">{{ user.username }}</span>
+                <span class="d-sm-inline d-none"><a href="{% url 'show_profile_page' user.id %}">{{ user.username }}</a></span>
               </a>
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>
