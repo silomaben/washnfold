@@ -17,10 +17,11 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15,unique=True)
-    email = models.EmailField(null=True)
+    email = models.EmailField(null=True, blank=True)
     # address = models.TextField()
-    loyalty_points = models.FloatField(default=0.0)
+    loyalty_points =models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.0'))
     registration_date = models.DateField()
+    profile_pic = models.ImageField(null=True,blank=True,upload_to="images/profile/customer/")
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -65,7 +66,7 @@ class Expense(models.Model):
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    order_date = models.DateField()
+    order_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed')])
     payment_method = models.CharField(max_length=50,null=True)
     description = models.TextField(blank=True, null=True)

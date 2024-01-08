@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
 # from decimal import Decimal
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,time
 from django.db.models import Count
 from datetime import datetime, timedelta
 
@@ -300,7 +300,8 @@ def get_customer_list(request):
     
 def Orders(request):
     choices = PaymentMethod.objects.all().values_list('name', 'name')
-    orders = Order.objects.filter(order_date__range=(timezone.now().date(),timezone.now().date())).select_related('customer')
+    # orders = Order.objects.filter(order_date__range=(datetime.combine(datetime.now().date(), datetime.min.time()), datetime.combine(datetime.now().date(), datetime.max.time()))).select_related('customer')
+    orders = Order.objects.filter(order_date__range=(datetime.combine(datetime.now().date(), datetime.min.time()),datetime.combine(datetime.now().date(), datetime.max.time()))).select_related('customer').order_by('-order_date', '-id')
 
     time_range = request.GET.get('time_range', 'today')
 
@@ -336,9 +337,12 @@ def Orders(request):
             end_date = custom_end_date
     
         if start_date:
-            orders = Order.objects.filter(order_date__range=[start_date, end_date]).select_related('customer').order_by('-order_date')
+            orders = Order.objects.filter(
+                order_date__range=[datetime.combine(start_date, time.min), datetime.combine(end_date, time.max)]
+            ).select_related('customer').order_by('-order_date', '-id')
         else:
-            orders = Order.objects.select_related('customer').order_by('-order_date')
+            orders = Order.objects.select_related('customer').order_by('-order_date', '-id')
+
 
         status_filter = request.GET.get('status')
         

@@ -68,7 +68,6 @@
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Expense date</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment Method</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
-                      <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
                     {% for expense in expenses %}
@@ -97,11 +96,7 @@
                             <td class="align-middle text-center">
                                 <span class="text-secondary text-xs font-weight-bold">{{ expense.amount }}</span>
                             </td>
-                            <td class="align-middle">
-                                <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                                Edit
-                                </a>
-                            </td>
+                            
                             </tr>
                         </tbody>
                     {% endfor %}

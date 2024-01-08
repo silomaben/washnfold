@@ -135,7 +135,7 @@
                                 <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
                             </div> -->
                             <div class="d-flex flex-column justify-content-center">
-                                <h6 id="customerName_{{ order.id }}" class="mb-0 text-sm">{{ order.customer.first_name }} {{ order.customer.last_name }}</h6>
+                                <h6 id="customerName_{{ order.id }}" class="mb-0 text-sm"><a href="{% url 'customer_detail' order.customer.id %}">{{ order.customer.first_name }} {{ order.customer.last_name }}</a></h6>
                                 <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
                             </div>
                             </div>
@@ -247,10 +247,7 @@
 {% endif%}
   <!--   Core JS Files   -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="{% static 'dashboard/js/core/popper.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/core/bootstrap.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/plugins/perfect-scrollbar.min.js' %}"></script>
-  <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js' %}"></script>
+  
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -532,6 +529,10 @@
   }
 </script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="{% static 'dashboard/js/core/popper.min.js' %}"></script>
+  <script src="{% static 'dashboard/js/core/bootstrap.min.js' %}"></script>
+  <script src="{% static 'dashboard/js/plugins/perfect-scrollbar.min.js' %}"></script>
+  <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js' %}"></script>
 
 
 </body>
